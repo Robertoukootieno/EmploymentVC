@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EmploymentCredential",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "description": "DID of the subject/employee" },
+    "employmentId": { "type": "string", "description": "Unique employment relationship ID" },
+    "name": { "type": "string", "description": "Full name of the employee" },
+    "jobTitle": { "type": "string", "description": "Employee’s role or position" },
+    "employmentType": { "type": "string", "enum": ["Full-time", "Part-time", "Contract", "Internship", "Consultant"], "description": "Nature of employment" },
+    "department": { "type": "string", "description": "Department or unit (optional)" },
+    "startDate": { "type": "string", "format": "date", "description": "Employment start date" },
+    "endDate": { "type": "string", "format": "date", "description": "Employment end date (optional)" },
+    "employer": { "type": "string", "description": "Name of the employing organization" },
+    "employerId": { "type": "string", "description": "DID of the employer/organization" },
+    "organizationCVR": { "type": "string", "description": "Danish Central Business Register (CVR) number of the organization"},
+    "location": { "type": "string", "description": "Location or country of employment" },
+    "status": { "type": "string", "enum": ["active", "terminated", "suspended"], "description": "Current employment status" },
+    "issuedBy": { "type": "string", "description": "DID of the issuer (e.g., HR officer, system)" },
+    "proofPurpose": { "type": "string", "default": "assertionMethod", "description": "Purpose of the VC proof" },
+    "credentialStatus": { "type": "string", "description": "URI to credential status list entry (revocation support)" }
+  },
+  "required": [
+    "id",
+    "employmentId",
+    "name",
+    "jobTitle",
+    "employmentType",
+    "startDate",
+    "employer",
+    "employerId",
+    "status",
+    "issuedBy"
+  ]
+}

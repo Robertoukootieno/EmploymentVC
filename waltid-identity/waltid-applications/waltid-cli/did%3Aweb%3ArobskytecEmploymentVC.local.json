@@ -1,0 +1,37 @@
+{
+    "content": {
+        "@context": [
+            "https://www.w3.org/ns/did/v1",
+            "https://w3id.org/security/suites/jws-2020/v1"
+        ],
+        "id": "did:web:robskytecEmploymentVC.local",
+        "verificationMethod": [
+            {
+                "id": "did:web:robskytecEmploymentVC.local#J8DuvuaCyVYpP-GQR4wL6QJrd-AA7oSLRFzr6yjYl-w",
+                "type": "JsonWebKey2020",
+                "controller": "did:web:robskytecEmploymentVC.local",
+                "publicKeyJwk": {
+                    "kty": "OKP",
+                    "crv": "Ed25519",
+                    "kid": "J8DuvuaCyVYpP-GQR4wL6QJrd-AA7oSLRFzr6yjYl-w",
+                    "x": "skUVmgi1dUZGa8myz0nOsZJE4Z-zjLlfc5VJKeyfdnY"
+                }
+            }
+        ],
+        "assertionMethod": [
+            "did:web:robskytecEmploymentVC.local#J8DuvuaCyVYpP-GQR4wL6QJrd-AA7oSLRFzr6yjYl-w"
+        ],
+        "authentication": [
+            "did:web:robskytecEmploymentVC.local#J8DuvuaCyVYpP-GQR4wL6QJrd-AA7oSLRFzr6yjYl-w"
+        ],
+        "capabilityInvocation": [
+            "did:web:robskytecEmploymentVC.local#J8DuvuaCyVYpP-GQR4wL6QJrd-AA7oSLRFzr6yjYl-w"
+        ],
+        "capabilityDelegation": [
+            "did:web:robskytecEmploymentVC.local#J8DuvuaCyVYpP-GQR4wL6QJrd-AA7oSLRFzr6yjYl-w"
+        ],
+        "keyAgreement": [
+            "did:web:robskytecEmploymentVC.local#J8DuvuaCyVYpP-GQR4wL6QJrd-AA7oSLRFzr6yjYl-w"
+        ]
+    }
+}
