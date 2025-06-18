@@ -1,3 +1,7 @@
 {
+<<<<<<< HEAD
+=======
+    "java.compile.nullAnalysis.mode": "automatic",
+>>>>>>> 8dd633f (latest updates to Issuer)
     "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"
 }
