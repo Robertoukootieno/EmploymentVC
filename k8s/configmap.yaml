@@ -1,0 +1,143 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provenly-config
+  namespace: provenly
+data:
+  # Application Configuration
+  NODE_ENV: "production"
+  API_VERSION: "v1"
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+  
+  # Service Ports
+  API_GATEWAY_PORT: "3000"
+  AUTH_SERVICE_PORT: "3001"
+  DID_REGISTRY_PORT: "3002"
+  CREDENTIAL_SCHEMA_REGISTRY_PORT: "3003"
+  ISSUER_SERVICE_PORT: "3004"
+  VERIFIER_SERVICE_PORT: "3005"
+  HOLDER_WALLET_PORT: "3006"
+  ORCHESTRATION_SERVICE_PORT: "3007"
+  
+  # Database Configuration
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_PORT: "5432"
+  
+  # Redis Configuration
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  
+  # Hyperledger Besu Configuration
+  BESU_RPC_URL: "http://besu-service:8545"
+  BESU_WS_URL: "ws://besu-service:8546"
+  BESU_NETWORK_ID: "1337"
+  BESU_CHAIN_ID: "1337"
+  
+  # EBSI Configuration (Production)
+  EBSI_API_BASE_URL: "https://api.ebsi.eu"
+  EBSI_DID_REGISTRY_URL: "https://api.ebsi.eu/did-registry/v4"
+  EBSI_TRUSTED_ISSUERS_REGISTRY_URL: "https://api.ebsi.eu/trusted-issuers-registry/v4"
+  EBSI_TRUSTED_SCHEMAS_REGISTRY_URL: "https://api.ebsi.eu/trusted-schemas-registry/v2"
+  
+  # Walt.id Configuration
+  WALTID_CORE_API_URL: "http://waltid-core-service:7000"
+  WALTID_SIGNATORY_API_URL: "http://waltid-signatory-service:7001"
+  
+  # Keycloak Configuration
+  KEYCLOAK_URL: "http://keycloak-service:8080"
+  KEYCLOAK_REALM: "provenly"
+  KEYCLOAK_CLIENT_ID: "provenly-client"
+  
+  # Service URLs (Internal)
+  AUTH_SERVICE_URL: "http://auth-service:3001"
+  DID_REGISTRY_URL: "http://did-registry-service:3002"
+  CREDENTIAL_SCHEMA_REGISTRY_URL: "http://credential-schema-registry-service:3003"
+  ISSUER_SERVICE_URL: "http://issuer-service:3004"
+  VERIFIER_SERVICE_URL: "http://verifier-service:3005"
+  HOLDER_WALLET_URL: "http://holder-wallet-service:3006"
+  ORCHESTRATION_SERVICE_URL: "http://orchestration-service:3007"
+  
+  # JWT Configuration
+  JWT_EXPIRES_IN: "1h"
+  JWT_REFRESH_EXPIRES_IN: "7d"
+  
+  # Monitoring Configuration
+  PROMETHEUS_PORT: "9090"
+  GRAFANA_PORT: "3001"
+  JAEGER_ENDPOINT: "http://jaeger-service:14268/api/traces"
+  
+  # External Services
+  AWS_REGION: "us-east-1"
+  AWS_S3_BUCKET: "provenly-credentials"
+  SMTP_HOST: "smtp.gmail.com"
+  SMTP_PORT: "587"
+  
+  # JSON-LD Configuration
+  JSONLD_CONTEXT_CACHE_TTL: "3600"
+  JSONLD_DOCUMENT_LOADER_TIMEOUT: "5000"
+  EMPLOYMENT_CONTEXT_URL: "https://your-domain.com/contexts/employment/v1"
+  EDUCATION_CONTEXT_URL: "https://your-domain.com/contexts/education/v1"
+  
+  # Selective Disclosure Configuration
+  SD_JWT_HOLDER_BINDING_REQUIRED: "true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provenly-dev-config
+  namespace: provenly-dev
+data:
+  # Application Configuration
+  NODE_ENV: "development"
+  API_VERSION: "v1"
+  LOG_LEVEL: "debug"
+  LOG_FORMAT: "pretty"
+  DEBUG: "provenly:*"
+  
+  # Service Ports (same as production)
+  API_GATEWAY_PORT: "3000"
+  AUTH_SERVICE_PORT: "3001"
+  DID_REGISTRY_PORT: "3002"
+  CREDENTIAL_SCHEMA_REGISTRY_PORT: "3003"
+  ISSUER_SERVICE_PORT: "3004"
+  VERIFIER_SERVICE_PORT: "3005"
+  HOLDER_WALLET_PORT: "3006"
+  ORCHESTRATION_SERVICE_PORT: "3007"
+  
+  # Database Configuration
+  POSTGRES_HOST: "postgres-dev-service"
+  POSTGRES_PORT: "5432"
+  
+  # Redis Configuration
+  REDIS_HOST: "redis-dev-service"
+  REDIS_PORT: "6379"
+  
+  # Hyperledger Besu Configuration
+  BESU_RPC_URL: "http://besu-dev-service:8545"
+  BESU_WS_URL: "ws://besu-dev-service:8546"
+  BESU_NETWORK_ID: "1337"
+  BESU_CHAIN_ID: "1337"
+  
+  # EBSI Configuration (Pilot Environment)
+  EBSI_API_BASE_URL: "https://api-pilot.ebsi.eu"
+  EBSI_DID_REGISTRY_URL: "https://api-pilot.ebsi.eu/did-registry/v4"
+  EBSI_TRUSTED_ISSUERS_REGISTRY_URL: "https://api-pilot.ebsi.eu/trusted-issuers-registry/v4"
+  EBSI_TRUSTED_SCHEMAS_REGISTRY_URL: "https://api-pilot.ebsi.eu/trusted-schemas-registry/v2"
+  
+  # Walt.id Configuration
+  WALTID_CORE_API_URL: "http://waltid-core-dev-service:7000"
+  WALTID_SIGNATORY_API_URL: "http://waltid-signatory-dev-service:7001"
+  
+  # Keycloak Configuration
+  KEYCLOAK_URL: "http://keycloak-dev-service:8080"
+  KEYCLOAK_REALM: "provenly-dev"
+  KEYCLOAK_CLIENT_ID: "provenly-dev-client"
+  
+  # JWT Configuration
+  JWT_EXPIRES_IN: "24h"
+  JWT_REFRESH_EXPIRES_IN: "7d"
+  
+  # Development Tools
+  CHOKIDAR_USEPOLLING: "true"
+  WATCHPACK_POLLING: "true"
