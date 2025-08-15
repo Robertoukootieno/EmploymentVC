@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: provenly
+  labels:
+    name: provenly
+    app.kubernetes.io/name: provenly
+    app.kubernetes.io/part-of: employment-vc-platform
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: provenly-dev
+  labels:
+    name: provenly-dev
+    app.kubernetes.io/name: provenly
+    app.kubernetes.io/part-of: employment-vc-platform
+    environment: development
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: provenly-staging
+  labels:
+    name: provenly-staging
+    app.kubernetes.io/name: provenly
+    app.kubernetes.io/part-of: employment-vc-platform
+    environment: staging

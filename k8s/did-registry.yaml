@@ -1,0 +1,160 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: did-registry
+  namespace: provenly
+  labels:
+    app: did-registry
+    component: did-registry
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: did-registry
+  template:
+    metadata:
+      labels:
+        app: did-registry
+        component: did-registry
+        tier: backend
+    spec:
+      containers:
+      - name: did-registry
+        image: ghcr.io/robertoukootieno/employmentvc/did-registry:latest
+        ports:
+        - containerPort: 3002
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: NODE_ENV
+        - name: PORT
+          value: "3002"
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres-service:5432/$(POSTGRES_DB)"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: POSTGRES_DB
+        - name: REDIS_URL
+          value: "redis://redis-service:6379"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: JWT_SECRET
+        - name: BESU_RPC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: BESU_RPC_URL
+        - name: EBSI_API_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: EBSI_API_BASE_URL
+        - name: EBSI_DID_REGISTRY_URL
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: EBSI_DID_REGISTRY_URL
+        - name: WALTID_CORE_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: WALTID_CORE_API_URL
+        - name: WALTID_SIGNATORY_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: WALTID_SIGNATORY_API_URL
+        - name: WALTID_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: WALTID_API_KEY
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 3002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 3002
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: did-registry-service
+  namespace: provenly
+  labels:
+    app: did-registry
+    component: did-registry
+    tier: backend
+spec:
+  selector:
+    app: did-registry
+  ports:
+  - port: 3002
+    targetPort: 3002
+    protocol: TCP
+    name: http
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: did-registry-hpa
+  namespace: provenly
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: did-registry
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

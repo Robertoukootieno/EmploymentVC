@@ -1,0 +1,13 @@
+rootProject.name = 'provenly-employment-vc'
+
+include 'api-gateway'
+include 'auth-service'
+include 'did-registry'
+include 'credential-schema-registry'
+include 'application-service'
+
+project(':api-gateway').projectDir = file('backend/api-gateway')
+project(':auth-service').projectDir = file('backend/auth-service')
+project(':did-registry').projectDir = file('backend/did-registry')
+project(':credential-schema-registry').projectDir = file('backend/credential-schema-registry')
+project(':application-service').projectDir = file('backend/application-service')

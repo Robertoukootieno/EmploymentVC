@@ -1,0 +1,98 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Provenly Services
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'auth-service'
+    static_configs:
+      - targets: ['auth-service:3001']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'did-registry'
+    static_configs:
+      - targets: ['did-registry:3002']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'credential-schema-registry'
+    static_configs:
+      - targets: ['credential-schema-registry:3003']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'issuer-service'
+    static_configs:
+      - targets: ['provenly-issuer-service:3004']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'verifier-service'
+    static_configs:
+      - targets: ['provenly-verifier-service:3005']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'holder-wallet'
+    static_configs:
+      - targets: ['provenly-holder-wallet:3006']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'orchestration-service'
+    static_configs:
+      - targets: ['orchestration-service:3007']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Infrastructure Services
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 60s
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 60s
+
+  - job_name: 'besu-node'
+    static_configs:
+      - targets: ['besu-node:8545']
+    scrape_interval: 60s
+
+  # Walt.id Services
+  - job_name: 'waltid-core'
+    static_configs:
+      - targets: ['waltid-core:7000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'waltid-signatory'
+    static_configs:
+      - targets: ['waltid-signatory:7001']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Keycloak
+  - job_name: 'keycloak'
+    static_configs:
+      - targets: ['keycloak:8080']
+    metrics_path: '/auth/realms/master/metrics'
+    scrape_interval: 60s

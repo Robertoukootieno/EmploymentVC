@@ -1,0 +1,251 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+  http2:
+    enabled: true
+
+spring:
+  application:
+    name: provenly-application-service
+  
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:development}
+  
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/provenly_dev}
+    username: ${DATABASE_USERNAME:provenly_dev}
+    password: ${DATABASE_PASSWORD:dev_password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  
+  data:
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+  
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI:http://localhost:8080/auth/realms/provenly}
+          jwk-set-uri: ${JWT_JWK_SET_URI:http://localhost:8080/auth/realms/provenly/protocol/openid-connect/certs}
+  
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000 # 10 minutes
+  
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+# Provenly specific configuration
+provenly:
+  blockchain:
+    rpc-url: ${BESU_RPC_URL:http://localhost:8545}
+    ws-url: ${BESU_WS_URL:ws://localhost:8546}
+    network-id: ${BESU_NETWORK_ID:1337}
+    chain-id: ${BESU_CHAIN_ID:1337}
+    private-key: ${BESU_PRIVATE_KEY:}
+  
+  ebsi:
+    api-base-url: ${EBSI_API_BASE_URL:https://api-pilot.ebsi.eu}
+    did-registry-url: ${EBSI_DID_REGISTRY_URL:https://api-pilot.ebsi.eu/did-registry/v4}
+    trusted-issuers-registry-url: ${EBSI_TRUSTED_ISSUERS_REGISTRY_URL:https://api-pilot.ebsi.eu/trusted-issuers-registry/v4}
+    trusted-schemas-registry-url: ${EBSI_TRUSTED_SCHEMAS_REGISTRY_URL:https://api-pilot.ebsi.eu/trusted-schemas-registry/v2}
+    client-id: ${EBSI_CLIENT_ID:}
+    client-secret: ${EBSI_CLIENT_SECRET:}
+    private-key: ${EBSI_PRIVATE_KEY:}
+  
+  waltid:
+    core-api-url: ${WALTID_CORE_API_URL:http://localhost:7000}
+    signatory-api-url: ${WALTID_SIGNATORY_API_URL:http://localhost:7001}
+    custodian-api-url: ${WALTID_CUSTODIAN_API_URL:http://localhost:7002}
+    auditor-api-url: ${WALTID_AUDITOR_API_URL:http://localhost:7003}
+    api-key: ${WALTID_API_KEY:}
+  
+  selective-disclosure:
+    issuer-key: ${SD_ISSUER_KEY:}
+    holder-binding-required: ${SD_HOLDER_BINDING_REQUIRED:true}
+    default-suite: ${SD_DEFAULT_SUITE:BbsBlsSignature2020}
+  
+  wallet:
+    encryption:
+      algorithm: AES-256-GCM
+      key-derivation: PBKDF2
+      iterations: 100000
+    backup:
+      enabled: ${WALLET_BACKUP_ENABLED:true}
+      location: ${WALLET_BACKUP_LOCATION:s3://provenly-backups/wallets}
+    custodial:
+      max-credentials-per-wallet: ${MAX_CREDENTIALS_PER_WALLET:1000}
+      auto-backup: ${CUSTODIAL_AUTO_BACKUP:true}
+    non-custodial:
+      metadata-retention-days: ${METADATA_RETENTION_DAYS:365}
+
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active}
+
+# Logging configuration
+logging:
+  level:
+    io.provenly: ${LOG_LEVEL:INFO}
+    org.springframework.security: ${SECURITY_LOG_LEVEL:WARN}
+    org.springframework.web: ${WEB_LOG_LEVEL:WARN}
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_BIND_LOG_LEVEL:WARN}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# OpenAPI/Swagger configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  info:
+    title: Provenly Application Service API
+    description: Core VC operations - Issuer, Verifier, and Wallets
+    version: 1.0.0
+    contact:
+      name: Provenly Team
+      email: support@provenly.io
+    license:
+      name: MIT License
+
+---
+# Development profile
+spring:
+  config:
+    activate:
+      on-profile: development
+  
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  
+  h2:
+    console:
+      enabled: false
+
+logging:
+  level:
+    io.provenly: DEBUG
+    org.springframework.web: DEBUG
+
+provenly:
+  wallet:
+    backup:
+      enabled: false
+
+---
+# Production profile
+spring:
+  config:
+    activate:
+      on-profile: production
+  
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    io.provenly: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: never
+
+provenly:
+  wallet:
+    backup:
+      enabled: true
+      location: ${WALLET_BACKUP_LOCATION:s3://provenly-prod-backups/wallets}
+
+---
+# Test profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    io.provenly: DEBUG
