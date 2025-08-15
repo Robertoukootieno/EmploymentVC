@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'org.springframework.boot' version '3.2.0' apply false
     id 'io.spring.dependency-management' version '1.1.4' apply false
     id 'com.github.spotbugs' version '5.2.1' apply false
@@ -14,10 +14,59 @@ allprojects {
         mavenCentral()
         maven { url 'https://repo.spring.io/milestone' }
         maven { url 'https://repo.spring.io/snapshot' }
+        maven { url 'https://jitpack.io' }
     }
 }
 
-subprojects {
+// Configure backend libraries
+configure(subprojects.findAll { it.path.startsWith(':auth-lib') || 
+                                it.path.startsWith(':credentials-lib') ||
+                                it.path.startsWith(':crypto-lib') ||
+                                it.path.startsWith(':protocols-lib') ||
+                                it.path.startsWith(':sdjwts-lib') ||
+                                it.path.startsWith(':core-wallet-lib') ||
+                                it.path.startsWith(':utils-lib') ||
+                                it.path.startsWith(':did-lib') ||
+                                it.path.startsWith(':library-commons') ||
+                                it.path.startsWith(':openid4vc-lib') }) {
+    apply plugin: 'java-library'
+    apply plugin: 'checkstyle'
+    apply plugin: 'com.github.spotbugs'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    dependencies {
+        // Common library dependencies
+        api 'org.slf4j:slf4j-api:2.0.9'
+        api 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
+        api 'org.apache.commons:commons-lang3:3.13.0'
+        
+        compileOnly 'org.projectlombok:lombok:1.18.30'
+        annotationProcessor 'org.projectlombok:lombok:1.18.30'
+        
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+        testImplementation 'org.mockito:mockito-core:5.7.0'
+        testImplementation 'org.assertj:assertj-core:3.24.2'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+}
+
+// Configure backend services
+configure(subprojects.findAll { it.path.startsWith(':issuer-api') ||
+                                it.path.startsWith(':verifier-api') ||
+                                it.path.startsWith(':wallet-api') ||
+                                it.path.startsWith(':web3-login-service') ||
+                                it.path.startsWith(':e2e-test-service') ||
+                                it.path.startsWith(':auth-service') ||
+                                it.path.startsWith(':did-registry') ||
+                                it.path.startsWith(':schema-registry') ||
+                                it.path.startsWith(':api-gateway') }) {
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
@@ -29,15 +78,8 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    configurations {
-        compileOnly {
-            extendsFrom annotationProcessor
-        }
-    }
-
     dependencies {
-        // Spring Boot Starters
-        implementation 'org.springframework.boot:spring-boot-starter'
+        // Spring Boot dependencies
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -51,12 +93,9 @@ subprojects {
         // Monitoring
         implementation 'io.micrometer:micrometer-registry-prometheus'
         
-        // JSON Processing
-        implementation 'com.fasterxml.jackson.core:jackson-databind'
-        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-        
-        // Validation
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        // Internal libraries
+        implementation project(':library-commons')
+        implementation project(':utils-lib')
         
         // Lombok
         compileOnly 'org.projectlombok:lombok'
@@ -67,19 +106,9 @@ subprojects {
         testImplementation 'org.springframework.security:spring-security-test'
         testImplementation 'org.testcontainers:junit-jupiter'
         testImplementation 'org.testcontainers:postgresql'
-        testImplementation 'org.testcontainers:testcontainers'
     }
 
     tasks.named('test') {
         useJUnitPlatform()
-    }
-
-    checkstyle {
-        toolVersion = '10.12.4'
-        configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
-    }
-
-    spotbugs {
-        toolVersion = '4.8.2'
     }
 }
