@@ -1,0 +1,86 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'checkstyle'
+    id 'com.github.spotbugs'
+}
+
+description = 'Provenly Library Commons - Shared components and interfaces'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withJavadocJar()
+    withSourcesJar()
+}
+
+dependencies {
+    // Core dependencies
+    api 'org.slf4j:slf4j-api:2.0.9'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
+    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.0'
+    api 'org.apache.commons:commons-lang3:3.13.0'
+    api 'commons-codec:commons-codec:1.16.0'
+    
+    // Validation
+    api 'jakarta.validation:jakarta.validation-api:3.0.2'
+    
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    testImplementation 'org.mockito:mockito-core:5.7.0'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+// Checkstyle configuration
+checkstyle {
+    toolVersion = '10.12.4'
+    configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
+}
+
+// SpotBugs configuration
+spotbugs {
+    toolVersion = '4.8.2'
+    effort = 'max'
+    reportLevel = 'medium'
+}
+
+// Publishing configuration
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            
+            pom {
+                name = 'Provenly Library Commons'
+                description = 'Shared components and interfaces for Provenly VC platform'
+                url = 'https://github.com/Robertoukootieno/EmploymentVC'
+                
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                
+                developers {
+                    developer {
+                        id = 'provenly-team'
+                        name = 'Provenly Team'
+                        email = 'support@provenly.io'
+                    }
+                }
+            }
+        }
+    }
+}

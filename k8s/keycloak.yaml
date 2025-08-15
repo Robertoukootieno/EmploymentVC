@@ -1,0 +1,302 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm-config
+  namespace: provenly
+data:
+  realm-export.json: |
+    {
+      "id": "provenly",
+      "realm": "provenly",
+      "displayName": "Provenly Employment VC Platform",
+      "enabled": true,
+      "sslRequired": "external",
+      "registrationAllowed": true,
+      "rememberMe": true,
+      "verifyEmail": false,
+      "loginWithEmailAllowed": true,
+      "duplicateEmailsAllowed": false,
+      "resetPasswordAllowed": true,
+      "editUsernameAllowed": false,
+      "bruteForceProtected": true,
+      "roles": {
+        "realm": [
+          {
+            "name": "ADMIN",
+            "description": "Platform administrator with full access"
+          },
+          {
+            "name": "ISSUER", 
+            "description": "Organization that can issue employment credentials"
+          },
+          {
+            "name": "VERIFIER",
+            "description": "Entity that can verify employment credentials"
+          },
+          {
+            "name": "HOLDER",
+            "description": "Individual who holds employment credentials"
+          }
+        ]
+      },
+      "clients": [
+        {
+          "clientId": "issuer-app-web",
+          "name": "Issuer Web Application",
+          "enabled": true,
+          "publicClient": true,
+          "standardFlowEnabled": true,
+          "redirectUris": ["https://issuer.provenly.io/*"],
+          "webOrigins": ["https://issuer.provenly.io"]
+        },
+        {
+          "clientId": "verifier-app-web", 
+          "name": "Verifier Web Application",
+          "enabled": true,
+          "publicClient": true,
+          "standardFlowEnabled": true,
+          "redirectUris": ["https://verifier.provenly.io/*"],
+          "webOrigins": ["https://verifier.provenly.io"]
+        },
+        {
+          "clientId": "holder-wallet-web",
+          "name": "Holder Wallet Web Application", 
+          "enabled": true,
+          "publicClient": true,
+          "standardFlowEnabled": true,
+          "redirectUris": ["https://wallet.provenly.io/*"],
+          "webOrigins": ["https://wallet.provenly.io"]
+        },
+        {
+          "clientId": "backend-services",
+          "name": "Backend Services",
+          "enabled": true,
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "secret": "backend-services-secret"
+        }
+      ]
+    }
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-secrets
+  namespace: provenly
+type: Opaque
+stringData:
+  KEYCLOAK_ADMIN: admin
+  KEYCLOAK_ADMIN_PASSWORD: secure-admin-password
+  KC_DB_PASSWORD: secure-db-password
+  BACKEND_SERVICES_SECRET: secure-backend-services-secret
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: provenly
+  labels:
+    app: keycloak
+    component: auth
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+        component: auth
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:23.0
+        args:
+          - start
+          - --optimized
+          - --import-realm
+        env:
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-secrets
+              key: KEYCLOAK_ADMIN
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-secrets
+              key: KEYCLOAK_ADMIN_PASSWORD
+        - name: KC_DB
+          value: postgres
+        - name: KC_DB_URL
+          value: jdbc:postgresql://postgres-service:5432/provenly_prod
+        - name: KC_DB_USERNAME
+          value: provenly_user
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-secrets
+              key: KC_DB_PASSWORD
+        - name: KC_HOSTNAME
+          value: auth.provenly.io
+        - name: KC_HOSTNAME_STRICT
+          value: "false"
+        - name: KC_HOSTNAME_STRICT_HTTPS
+          value: "false"
+        - name: KC_HTTP_ENABLED
+          value: "true"
+        - name: KC_PROXY
+          value: edge
+        - name: KC_HEALTH_ENABLED
+          value: "true"
+        - name: KC_METRICS_ENABLED
+          value: "true"
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: https
+          containerPort: 8443
+          protocol: TCP
+        - name: management
+          containerPort: 9000
+          protocol: TCP
+        volumeMounts:
+        - name: realm-config
+          mountPath: /opt/keycloak/data/import
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: realm-config
+        configMap:
+          name: keycloak-realm-config
+      securityContext:
+        fsGroup: 1000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-service
+  namespace: provenly
+  labels:
+    app: keycloak
+    component: auth
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  - name: https
+    port: 8443
+    targetPort: 8443
+    protocol: TCP
+  - name: management
+    port: 9000
+    targetPort: 9000
+    protocol: TCP
+  selector:
+    app: keycloak
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak-ingress
+  namespace: provenly
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
+spec:
+  tls:
+  - hosts:
+    - auth.provenly.io
+    secretName: keycloak-tls
+  rules:
+  - host: auth.provenly.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: keycloak-service
+            port:
+              number: 8080
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: keycloak-hpa
+  namespace: provenly
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: keycloak
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: keycloak-pdb
+  namespace: provenly
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: keycloak
