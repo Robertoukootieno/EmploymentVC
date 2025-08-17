@@ -1,0 +1,36 @@
+# 🚀 Git Commands to Commit Enhanced Mobile Wallet
+
+# Navigate to project directory
+cd frontend-apps/holder-wallet
+
+# Check current status
+git status
+
+# Stage all changes
+git add .
+
+# Commit with message
+git commit -m "feat: Enhanced mobile wallet with advanced DID, key management, and VC/VP features
+
+✨ New Features:
+- Complete signup flow with DID creation and key generation
+- Multi-method DID support (EBSI, Ethereum, Key-based, Web)
+- Advanced key management (RSA, SECP256R1, SECP256K1, Ed25519)
+- Enhanced VC/VP processing with selective disclosure
+- QR code scanning with modern camera integration
+- Biometric authentication with hardware security
+
+🔧 Technical Improvements:
+- Resolved dependency conflicts (removed deprecated react-native-camera)
+- Added crypto polyfills for Node.js modules in React Native
+- Complete TypeScript type system for crypto operations
+- Hardware security module integration
+
+📱 New Screens: SignupScreen, DIDCreationScreen, KeyManagementScreen
+🔐 New Services: keyService, didService, vcService (enhanced)
+🎨 Professional UI/UX with design system
+
+🚀 Ready for enterprise deployment!"
+
+# Push to repository
+git push origin main
