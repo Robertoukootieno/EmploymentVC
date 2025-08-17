@@ -1,0 +1,44 @@
+{
+  "name": "ProvenlyWallet",
+  "displayName": "Provenly Wallet",
+  "description": "Secure employment credential wallet for iOS and Android",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "icon": "./assets/icon.png",
+  "splash": {
+    "image": "./assets/splash.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#1E3A8A"
+  },
+  "platforms": ["ios", "android"],
+  "ios": {
+    "bundleIdentifier": "io.provenly.wallet",
+    "buildNumber": "1",
+    "supportsTablet": true,
+    "infoPlist": {
+      "NSCameraUsageDescription": "This app uses the camera to scan QR codes for credential verification.",
+      "NSFaceIDUsageDescription": "This app uses Face ID for secure authentication.",
+      "NSLocationWhenInUseUsageDescription": "This app may use location for enhanced security features."
+    }
+  },
+  "android": {
+    "package": "io.provenly.wallet",
+    "versionCode": 1,
+    "permissions": [
+      "CAMERA",
+      "USE_FINGERPRINT",
+      "USE_BIOMETRIC",
+      "INTERNET",
+      "ACCESS_NETWORK_STATE",
+      "VIBRATE"
+    ],
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
+      "backgroundColor": "#1E3A8A"
+    }
+  },
+  "web": {
+    "favicon": "./assets/favicon.png"
+  },
+  "privacy": "public"
+}
