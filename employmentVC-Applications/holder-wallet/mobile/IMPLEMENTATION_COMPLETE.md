@@ -157,7 +157,7 @@ We have successfully implemented all the requested features for the native mobil
 
 ### **✅ Development Setup**
 ```bash
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 npm install
 cd ios && pod install && cd ..
 npm run ios    # or npm run android

@@ -22,7 +22,7 @@
 ### **Step 1: Check Current Status**
 ```bash
 # Navigate to the project root
-cd frontend-apps/holder-wallet
+cd employmentVC-Applications/holder-wallet
 
 # Check what files have changed
 git status

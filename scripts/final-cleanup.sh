@@ -123,7 +123,7 @@ fi
 print_step "Verifying final project structure..."
 echo ""
 echo "📁 Final Project Structure:"
-echo "├── frontend-apps/              # User-facing applications"
+echo "├── employmentVC-Applications/  # User-facing applications"
 echo "│   ├── issuer-app/"
 echo "│   ├── verifier-app/"
 echo "│   └── holder-wallet/"
@@ -164,8 +164,8 @@ actual_structure_issues=0
 
 # Check required directories exist
 required_dirs=(
-    "frontend-apps"
-    "backend-libraries" 
+    "employmentVC-Applications"
+    "backend-libraries"
     "backend-services"
     "infra"
     "k8s"
@@ -204,7 +204,7 @@ if [ $actual_structure_issues -eq 0 ]; then
     print_success "✅ Project structure is clean and correct!"
     echo ""
     echo "🎯 Structure Summary:"
-    echo "✅ Frontend Apps: $(find frontend-apps -maxdepth 2 -type d | wc -l) directories"
+    echo "✅ Frontend Apps: $(find employmentVC-Applications -maxdepth 2 -type d | wc -l) directories"
     echo "✅ Backend Libraries: $(find backend-libraries -maxdepth 1 -type d | tail -n +2 | wc -l) libraries"
     echo "✅ Backend Services: $(find backend-services -maxdepth 1 -type d | tail -n +2 | wc -l) services"
     echo "✅ No duplicate or unwanted directories"

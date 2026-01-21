@@ -24,7 +24,7 @@ I've updated the original `mobile/` folder to resolve the dependency conflicts w
 
 ```bash
 # Navigate to your original mobile folder (with all features)
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 
 # Clear any existing installations
 rm -rf node_modules package-lock.json yarn.lock

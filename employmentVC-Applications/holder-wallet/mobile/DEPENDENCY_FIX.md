@@ -25,7 +25,7 @@
 ## ✅ **Now Try Installation:**
 
 ```bash
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 
 # Clear any existing installations
 rm -rf node_modules package-lock.json yarn.lock

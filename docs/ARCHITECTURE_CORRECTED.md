@@ -8,11 +8,11 @@ Thank you for the correction! The architecture is now properly structured with c
 
 ### **🖥️ Frontend Applications (User-facing)**
 ```
-frontend-apps/
+employmentVC-Applications/
 ├── issuer-app/                 # For organizations to issue credentials
 │   ├── web/                   # React/Next.js web application
 │   └── mobile/                # React Native mobile app
-├── verifier-app/              # For verifiers to verify credentials  
+├── verifier-app/              # For verifiers to verify credentials
 │   ├── web/                   # React/Next.js with QR code scanning
 │   └── mobile/                # React Native with camera integration
 └── holder-wallet/             # For individuals to manage credentials

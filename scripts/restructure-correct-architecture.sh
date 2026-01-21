@@ -31,7 +31,7 @@ print_step "Creating correct project structure..."
 rm -rf backend/application-service
 
 # Frontend Applications (User-facing)
-mkdir -p frontend-apps/{issuer-app,verifier-app,holder-wallet}/{web,mobile}
+mkdir -p employmentVC-Applications/{issuer-app,verifier-app,holder-wallet}/{web,mobile}
 
 # Backend Libraries (Core functionality)
 mkdir -p backend-libraries/{auth-lib,credentials-lib,crypto-lib,protocols-lib,sdjwts-lib,core-wallet-lib,utils-lib,did-lib,library-commons,openid4vc-lib}
@@ -227,7 +227,7 @@ cat > docs/CORRECT_ARCHITECTURE.md << 'EOF'
 
 ### **Frontend Applications (User-facing)**
 ```
-frontend-apps/
+employmentVC-Applications/
 ├── issuer-app/                 # For organizations to issue credentials
 │   ├── web/                   # React/Next.js web application
 │   └── mobile/                # React Native mobile app
@@ -445,11 +445,11 @@ backend-services/
 ### **Frontend Development**
 ```bash
 # Issuer web app
-cd frontend-apps/issuer-app/web
+cd employmentVC-Applications/issuer-app/web
 npm run dev
 
 # Verifier mobile app
-cd frontend-apps/verifier-app/mobile
+cd employmentVC-Applications/verifier-app/mobile
 npx react-native run-android
 ```
 
@@ -462,7 +462,7 @@ print_success "Architecture documentation created"
 print_step "Final correct project structure:"
 echo ""
 echo "📁 Provenly Employment VC Platform (Correct Architecture)"
-echo "├── frontend-apps/              # User-facing applications"
+echo "├── employmentVC-Applications/  # User-facing applications"
 echo "│   ├── issuer-app/            # Organization credential issuance"
 echo "│   │   ├── web/               # React/Next.js web app"
 echo "│   │   └── mobile/            # React Native mobile app"

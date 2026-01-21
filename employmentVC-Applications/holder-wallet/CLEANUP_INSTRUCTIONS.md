@@ -8,7 +8,7 @@ I apologize - the `mobile-new` directory is still there. Please remove it manual
 
 ```bash
 # Navigate to the holder-wallet directory
-cd frontend-apps/holder-wallet
+cd employmentVC-Applications/holder-wallet
 
 # Remove the duplicate mobile-new directory completely
 rm -rf mobile-new
@@ -21,7 +21,7 @@ ls -la
 ### **✅ What You Should Have After Cleanup:**
 
 ```
-frontend-apps/holder-wallet/
+employmentVC-Applications/holder-wallet/
 ├── mobile/                    # ← This is your MAIN directory with ALL features
 │   ├── src/
 │   │   ├── screens/          # All enhanced screens (Signup, DID, Keys, etc.)
@@ -42,7 +42,7 @@ After removing `mobile-new`, use your original `mobile` directory:
 
 ```bash
 # Navigate to your MAIN mobile directory (with all features)
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 
 # Clear any existing installations
 rm -rf node_modules package-lock.json yarn.lock

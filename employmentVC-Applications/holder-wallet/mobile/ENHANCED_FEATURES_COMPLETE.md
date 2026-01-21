@@ -175,7 +175,7 @@ All requested features have been implemented:
 ### **✅ Development Ready**
 ```bash
 # Install dependencies
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 npm install
 
 # iOS setup

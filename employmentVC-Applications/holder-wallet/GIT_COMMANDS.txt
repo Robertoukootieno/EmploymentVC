@@ -1,7 +1,7 @@
 # 🚀 Git Commands to Commit Enhanced Mobile Wallet
 
 # Navigate to project directory
-cd frontend-apps/holder-wallet
+cd employmentVC-Applications/holder-wallet
 
 # Check current status
 git status

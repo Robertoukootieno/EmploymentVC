@@ -109,7 +109,7 @@ sudo gem install cocoapods
 ### **Installation**
 ```bash
 # Navigate to mobile app directory
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 
 # Install dependencies
 npm install

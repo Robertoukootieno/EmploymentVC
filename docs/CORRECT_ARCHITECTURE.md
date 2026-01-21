@@ -4,7 +4,7 @@
 
 ### **Frontend Applications (User-facing)**
 ```
-frontend-apps/
+employmentVC-Applications/
 ├── issuer-app/                 # For organizations to issue credentials
 │   ├── web/                   # React/Next.js web application
 │   └── mobile/                # React Native mobile app
@@ -222,11 +222,11 @@ backend-services/
 ### **Frontend Development**
 ```bash
 # Issuer web app
-cd frontend-apps/issuer-app/web
+cd employmentVC-Applications/issuer-app/web
 npm run dev
 
 # Verifier mobile app
-cd frontend-apps/verifier-app/mobile
+cd employmentVC-Applications/verifier-app/mobile
 npx react-native run-android
 ```
 

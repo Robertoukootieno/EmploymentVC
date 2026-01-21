@@ -55,7 +55,7 @@ mobile-new/
 
 ### **Step 1: Navigate to Project**
 ```bash
-cd frontend-apps/holder-wallet/mobile-new
+cd employmentVC-Applications/holder-wallet/mobile-new
 ```
 
 ### **Step 2: Install Dependencies**

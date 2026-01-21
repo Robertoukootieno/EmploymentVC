@@ -15,7 +15,7 @@ I've resolved multiple dependency conflicts:
 Run the installation with legacy peer deps to resolve conflicts:
 
 ```bash
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 
 # Clear any existing node_modules and lock files
 rm -rf node_modules package-lock.json yarn.lock
@@ -38,7 +38,7 @@ npm run ios    # or npm run android
 If you prefer to use exact versions, install specific compatible versions:
 
 ```bash
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 
 # Clear existing installations
 rm -rf node_modules package-lock.json
@@ -96,7 +96,7 @@ xcode-select --install
 ### **2. Project Setup**
 ```bash
 # Navigate to project
-cd frontend-apps/holder-wallet/mobile
+cd employmentVC-Applications/holder-wallet/mobile
 
 # Install dependencies (use one of the methods above)
 npm install --legacy-peer-deps

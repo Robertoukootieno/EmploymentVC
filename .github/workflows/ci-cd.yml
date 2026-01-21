@@ -164,26 +164,26 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: 'frontend-apps/${{ matrix.app }}/package-lock.json'
+          cache-dependency-path: 'employmentVC-Applications/${{ matrix.app }}/package-lock.json'
 
       - name: Install dependencies
         run: |
-          cd frontend-apps/${{ matrix.app }}
+          cd employmentVC-Applications/${{ matrix.app }}
           npm ci
 
       - name: Run tests
         run: |
-          cd frontend-apps/${{ matrix.app }}
+          cd employmentVC-Applications/${{ matrix.app }}
           npm test
 
       - name: Run linting
         run: |
-          cd frontend-apps/${{ matrix.app }}
+          cd employmentVC-Applications/${{ matrix.app }}
           npm run lint
 
       - name: Build application
         run: |
-          cd frontend-apps/${{ matrix.app }}
+          cd employmentVC-Applications/${{ matrix.app }}
           npm run build
 
   # Build and Push Backend Docker Images
@@ -285,7 +285,7 @@ jobs:
       - name: Build and push Frontend Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend-apps/${{ matrix.app }}
+          context: ./employmentVC-Applications/${{ matrix.app }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
