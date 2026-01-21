@@ -6,13 +6,15 @@ metadata:
 data:
   # Application Configuration
   NODE_ENV: "production"
+  SPRING_PROFILES_ACTIVE: "prod"
   API_VERSION: "v1"
   LOG_LEVEL: "info"
   LOG_FORMAT: "json"
   
   # Service Ports
   API_GATEWAY_PORT: "3000"
-  AUTH_SERVICE_PORT: "3001"
+  AUTH_SERVICE_PORT: "8081"
+  WALLET_API_PORT: "8082"
   DID_REGISTRY_PORT: "3002"
   CREDENTIAL_SCHEMA_REGISTRY_PORT: "3003"
   ISSUER_SERVICE_PORT: "3004"
@@ -50,7 +52,8 @@ data:
   KEYCLOAK_CLIENT_ID: "provenly-client"
   
   # Service URLs (Internal)
-  AUTH_SERVICE_URL: "http://auth-service:3001"
+  AUTH_SERVICE_URL: "http://auth-service-service:8081"
+  WALLET_API_URL: "http://wallet-api-service:8082"
   DID_REGISTRY_URL: "http://did-registry-service:3002"
   CREDENTIAL_SCHEMA_REGISTRY_URL: "http://credential-schema-registry-service:3003"
   ISSUER_SERVICE_URL: "http://issuer-service:3004"
