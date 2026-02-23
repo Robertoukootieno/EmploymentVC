@@ -28,7 +28,7 @@ print_warning() {
 print_step "Creating new project structure..."
 
 # Backend services structure
-mkdir -p backend/{api-gateway,auth-service,did-registry,credential-schema-registry,application-service}
+mkdir -p backend/{api-gateway,auth-service,did-registry,schema-registry,application-service}
 
 # Frontend structure
 mkdir -p frontend/{src,public,components,pages,hooks,utils,types,styles}
@@ -51,13 +51,13 @@ rootProject.name = 'provenly-employment-vc'
 include 'api-gateway'
 include 'auth-service'
 include 'did-registry'
-include 'credential-schema-registry'
+include 'schema-registry'
 include 'application-service'
 
 project(':api-gateway').projectDir = file('backend/api-gateway')
 project(':auth-service').projectDir = file('backend/auth-service')
 project(':did-registry').projectDir = file('backend/did-registry')
-project(':credential-schema-registry').projectDir = file('backend/credential-schema-registry')
+project(':schema-registry').projectDir = file('backend/schema-registry')
 project(':application-service').projectDir = file('backend/application-service')
 EOF
 
@@ -511,7 +511,7 @@ echo "├── backend/                    # Java/Spring Boot services"
 echo "│   ├── api-gateway/"
 echo "│   ├── auth-service/"
 echo "│   ├── did-registry/"
-echo "│   ├── credential-schema-registry/"
+echo "│   ├── schema-registry/"
 echo "│   └── application-service/"
 echo "├── frontend/                   # Next.js application"
 echo "├── shared/                     # Shared schemas and resources"

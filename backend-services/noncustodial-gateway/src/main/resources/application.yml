@@ -1,0 +1,43 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: noncustodial-gateway
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+
+wallet:
+  noncustodial:
+    supported-protocols:
+      - DIDComm
+      - OIDC4VP
+      - CHAPI
+    session-ttl: 900
+  didcomm:
+    mediator-url: ${DIDCOMM_MEDIATOR_URL:}
+    supported-versions:
+      - v2
+
+vp-request:
+  timeout: 300
+  max-retries: 3
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.employmentvc.wallet.noncustodial: DEBUG

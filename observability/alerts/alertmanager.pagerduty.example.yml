@@ -1,0 +1,14 @@
+# Example integration for PagerDuty
+route:
+  receiver: 'default'
+  routes:
+    - receiver: 'pagerduty-notifications'
+      match:
+        severity: critical
+receivers:
+  - name: 'pagerduty-notifications'
+    pagerduty_configs:
+      - routing_key: 'YOUR_PAGERDUTY_INTEGRATION_KEY'
+        severity: '{{ .CommonLabels.severity }}'
+        send_resolved: true
+        description: '{{ .CommonAnnotations.description }}'

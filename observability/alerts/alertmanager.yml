@@ -1,0 +1,33 @@
+route:
+  receiver: 'default'
+  routes:
+    - receiver: 'slack-notifications'
+      match:
+        severity: critical
+    - receiver: 'webhook-notifications'
+      match:
+        severity: warning
+receivers:
+  - name: 'default'
+    email_configs:
+      - to: 'ops@example.com'
+        from: 'grafana@example.com'
+        smarthost: 'smtp.example.com:587'
+        auth_username: 'grafana@example.com'
+        auth_password: 'yourpassword'
+        require_tls: true
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#alerts'
+        api_url: '${SLACK_WEBHOOK_URL}'  # Set via environment variable
+        send_resolved: true
+        title: '{{ .CommonAnnotations.summary }}'
+        text: '{{ .CommonAnnotations.description }}'
+  - name: 'webhook-notifications'
+    webhook_configs:
+      - url: 'https://example.com/alert'
+        send_resolved: true
+        http_config:
+          basic_auth:
+            username: 'webhookuser'
+            password: 'webhookpassword'

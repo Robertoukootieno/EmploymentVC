@@ -1,0 +1,11 @@
+{
+  "artifacts": [
+    {
+      "path": "shared/schemas/credentials/employment-credential.json",
+      "type": "credential-schema",
+      "owner": "team-ssi-platform",
+      "version": "1.0.0",
+      "status": "active"
+    }
+  ]
+}

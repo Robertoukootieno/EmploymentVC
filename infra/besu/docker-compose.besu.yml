@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  besu-node:
+    image: hyperledger/besu:latest
+    container_name: besu-node
+    restart: unless-stopped
+    environment:
+      BESU_OPTS: "-Xmx2g -Xms1g"
+      NETWORK: "development"
+      NODE_NAME: "besu-node"
+      RPC_PORT: "8545"
+      WS_PORT: "8546"
+      P2P_PORT: "30303"
+    volumes:
+      - ./genesis.json:/opt/besu/genesis.json:ro
+      - ./start-besu.sh:/opt/besu/start-besu.sh:ro
+      - besu-data:/opt/besu/data
+      - besu-keys:/opt/besu/keys
+    ports:
+      - "8545:8545"    # RPC HTTP
+      - "8546:8546"    # RPC WebSocket
+      - "30303:30303"  # P2P
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+        labels: "service=besu"
+    networks:
+      employmentvc:
+        aliases:
+          - besu-node
+
+volumes:
+  besu-data:
+    driver: local
+  besu-keys:
+    driver: local
+
+networks:
+  employmentvc:
+    external: true
+    driver: bridge

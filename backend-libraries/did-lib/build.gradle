@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+description = 'Provenly DID Library - higher-level DID registry helpers'
+
+dependencies {
+    api project(':library-commons')
+    api project(':did-core')
+}

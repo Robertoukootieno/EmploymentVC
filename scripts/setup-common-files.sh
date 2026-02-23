@@ -11,7 +11,7 @@ SERVICES=(
     "api-gateway"
     "auth-service"
     "did-registry"
-    "credential-schema-registry"
+    "schema-registry"
     "provenly-issuer-service"
     "provenly-verifier-service"
     "provenly-holder-wallet"
@@ -28,7 +28,7 @@ create_common_files() {
         "api-gateway") port="3000" ;;
         "auth-service") port="3001" ;;
         "did-registry") port="3002" ;;
-        "credential-schema-registry") port="3003" ;;
+        "schema-registry") port="8086" ;;
         "provenly-issuer-service") port="3004" ;;
         "provenly-verifier-service") port="3005" ;;
         "provenly-holder-wallet") port="3006" ;;
@@ -80,7 +80,7 @@ export const config = {
     ebsiApiUrl: process.env.EBSI_API_BASE_URL || 'https://api-pilot.ebsi.eu',
     waltidCoreUrl: process.env.WALTID_CORE_API_URL || 'http://localhost:7000',
     didRegistryUrl: process.env.DID_REGISTRY_URL || 'http://localhost:3002',
-    schemaRegistryUrl: process.env.SCHEMA_REGISTRY_URL || 'http://localhost:3003',
+    schemaRegistryUrl: process.env.SCHEMA_REGISTRY_URL || 'http://localhost:8086',
   },
 };
 EOF

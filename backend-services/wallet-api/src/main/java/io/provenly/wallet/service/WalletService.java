@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Service for wallet management operations.
@@ -111,7 +110,7 @@ public class WalletService {
             );
 
             if (!ownershipVerified) {
-                throw new ProvenlyException.UnauthorizedException("Ownership proof verification failed");
+                throw new ProvenlyException("Ownership proof verification failed", "AUTH_ERROR", 401);
             }
 
             // Check if DID already exists

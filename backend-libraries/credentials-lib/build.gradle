@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+description = 'Provenly Credentials Library - credential persistence and lifecycle helpers'
+
+dependencies {
+    api project(':library-commons')
+    api project(':vc-core')
+}

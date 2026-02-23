@@ -34,8 +34,29 @@ public class KeyGenerationService {
             case SECP256R1 -> generateEcKeyPair("secp256r1");
             case SECP384R1 -> generateEcKeyPair("secp384r1");
             case SECP521R1 -> generateEcKeyPair("secp521r1");
-            case BLS12_381 -> throw new UnsupportedOperationException("BLS12-381 not yet implemented");
+            case BLS12_381 -> generateBls12381KeyPair();
         };
+    }
+
+    /**
+     * Generate a BLS12-381 key pair.
+     *
+     * Attempts common curve aliases supported by JCA providers.
+     */
+    private KeyPair generateBls12381KeyPair() {
+        String[] candidateCurveNames = {"BLS12-381", "BLS12381", "bls12-381"};
+
+        Exception lastException = null;
+        for (String curveName : candidateCurveNames) {
+            try {
+                return generateEcKeyPair(curveName);
+            } catch (Exception e) {
+                lastException = e;
+                log.debug("Curve alias '{}' is not available for BLS12-381 key generation", curveName);
+            }
+        }
+
+        throw new RuntimeException("Failed to generate BLS12-381 key pair: curve is not supported by current providers", lastException);
     }
 
     /**
@@ -129,6 +150,7 @@ public class KeyGenerationService {
                 case "secp256r1" -> KeyType.SECP256R1;
                 case "secp384r1" -> KeyType.SECP384R1;
                 case "secp521r1" -> KeyType.SECP521R1;
+                case "BLS12-381", "BLS12381", "bls12-381" -> KeyType.BLS12_381;
                 default -> throw new IllegalArgumentException("Unsupported curve: " + curveName);
             };
 

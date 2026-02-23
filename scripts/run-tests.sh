@@ -11,7 +11,7 @@ SERVICES=(
     "api-gateway"
     "auth-service"
     "did-registry"
-    "credential-schema-registry"
+    "schema-registry"
     "provenly-issuer-service"
     "provenly-verifier-service"
     "provenly-holder-wallet"

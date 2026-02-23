@@ -1,5 +1,6 @@
 package io.provenly.auth.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.provenly.commons.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SuppressFBWarnings(value = {"EI", "EI2"}, justification = "Roles are defensively copied on access/mutation.")
 public class User extends BaseEntity {
 
     /**
@@ -96,6 +98,14 @@ public class User extends BaseEntity {
      */
     public boolean hasRole(String role) {
         return roles != null && roles.contains(role);
+    }
+
+    public Set<String> getRoles() {
+        return roles == null ? null : Set.copyOf(roles);
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles == null ? null : new HashSet<>(roles);
     }
 
     /**

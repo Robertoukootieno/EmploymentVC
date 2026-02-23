@@ -16,11 +16,74 @@ A comprehensive Verifiable Credentials platform for employment verification buil
 - **Web3 Integration** - Wallet connectivity and blockchain interactions
 - **Responsive Design** - Mobile-first approach with Tailwind CSS
 
-### Infrastructure
-- **Hyperledger Besu** - Blockchain network
-- **PostgreSQL** - Primary database
-- **Redis** - Caching and sessions
-- **Keycloak** - Identity management
+## 🏗️ Complete Infrastructure Stack
+
+The platform includes enterprise-grade infrastructure for development, staging, and production:
+
+### Core Services
+- **PostgreSQL** - Multi-database setup with audit logging & role-based access
+- **Redis** - Session caching and credential schema cache
+- **Hyperledger Besu** - Private blockchain (Chain ID 1337, Clique consensus)
+- **Keycloak** - Identity & Access Management (OIDC/OAuth2)
+
+### Security Layer
+- **ModSecurity WAF** - OWASP Top 10 protection via nginx
+- **CrowdSec** - DDoS & brute-force detection with behavioral threat analysis
+- **OPA Policies** - Fine-grained access control (RBAC/ABAC)
+- **mTLS Certificates** - Service-to-service encryption
+
+### Observability & Monitoring
+- **Prometheus** - Metrics collection and alerting
+- **Grafana** - Metrics visualization & dashboards
+- **Loki** - Log aggregation & querying
+- **Tempo** - Distributed tracing
+- **Alertmanager** - Alert routing & notification
+
+### Deployment Options
+- **Docker Compose** - Development & testing
+- **Kubernetes** - Production with Helm or native manifests
+- **Terraform** - Infrastructure as Code for cloud providers
+
+### Database Schema
+
+| Database | Purpose | Tables |
+|----------|---------|--------|
+| `employmentvc_core` | Core platform | organizations, audit_log |
+| `employmentvc_auth` | Auth service | account_lockouts, login_audit, rate_limit_sessions |
+| `employmentvc_credential` | Credentials | credential_schemas, credentials, credential_revocation |
+| `employmentvc_wallet` | Wallet data | wallets, wallet_keys, transactions |
+| `employmentvc_did` | DID registry | dids, did_documents, did_operations |
+| `employmentvc_issuer` | Issuer data | issuer_profiles, issued_credentials, signing_keys |
+| `employmentvc_verifier` | Verifier data | verifier_profiles, verification_requests, verification_results |
+| `keycloak` | Identity Mgmt | realms, users, roles, clients, federated_users |
+
+---
+
+## 🔧 Infrastructure Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│    API Layer (Spring Boot Services)         │
+│  Auth │ Wallet │ Issuer │ Verifier │ Gateway│
+└────────────────┬────────────────────────────┘
+                 │
+┌────────────────┴────────────────────────────┐
+│  Security Layer (WAF + Access Control)      │
+│  ModSecurity │ CrowdSec │ OPA │ mTLS        │
+└────────────────┬────────────────────────────┘
+                 │
+┌────────────────┴────────────────────────────┐
+│  Storage & State (Database + Blockchain)    │
+│  PostgreSQL 15 │ Redis 7 │ Besu Node        │
+└────────────────┬────────────────────────────┘
+                 │
+┌────────────────┴────────────────────────────┐
+│  Observability (Prometheus + Loki)          │
+│  Metrics │ Logs │ Traces │ Alerts           │
+└─────────────────────────────────────────────┘
+```
+
+---
 
 ## 🚀 Quick Start
 
@@ -40,7 +103,19 @@ A comprehensive Verifiable Credentials platform for employment verification buil
 
 2. **Start infrastructure**
    ```bash
-   docker-compose up -d postgres redis besu-node keycloak
+   # Recommended: Start integrated stack with all components
+   ./scripts/start-platform-stack.sh
+   
+   # Optional: Include Vault and ELK stack
+   ./scripts/start-platform-stack.sh --with-vault --with-elk
+   
+   # Verify infrastructure setup
+   ./scripts/verify-infrastructure.sh
+   ```
+
+   Or use Docker Compose directly:
+   ```bash
+   COMPOSE_PROJECT_NAME=employmentvc docker compose up -d postgres redis besu-node keycloak
    ```
 
 3. **Build and run backend services**
@@ -104,8 +179,42 @@ npm run build
 npm test
 ```
 
+## � Security Setup
+
+The platform includes comprehensive security infrastructure. For complete security setup:
+
+```bash
+# One-command security setup
+bash security/setup-security.sh development
+
+# Or for production with Vault
+bash security/setup-security.sh production --vault-addr https://vault.prod.example.com
+```
+
+**Key Security Components**:
+- **TLS/mTLS Certificates** - Automated generation and management
+- **OPA Policies** - Fine-grained access control (RBAC/ABAC)
+- **Vault Integration** - Centralized secret management
+- **Security Testing** - SAST, DAST, dependency scanning
+- **Threat Modeling** - GDPR, SOC 2, ISO 27001 compliance
+- **SBOM Generation** - Supply chain security tracking
+
+See [**Security Documentation**](security/README.md) for details.
+
 ## 📚 Documentation
 
+### Security & Compliance
+- [**Security README**](security/README.md) - Security infrastructure overview
+- [**Security Implementation Guide**](security/IMPLEMENTATION.md) - Complete setup & integration guide
+- [**Responsible Disclosure**](security.md) - Vulnerability reporting policy
+- [**Threat Model**](security/threat-models/threat-model.md) - Risk assessment & compliance roadmap
+- [**Deployment Checklist**](security/DEPLOYMENT_CHECKLIST.md) - Pre-deployment verification steps
+
+### Infrastructure & Deployment
+- [**Infrastructure Integration Guide**](INFRASTRUCTURE_INTEGRATION.md) - Complete guide to infrastructure & security layers
+- [**Infrastructure README**](infra/README.md) - Detailed infra component documentation
+
+### Application & Architecture
 - [API Documentation](docs/API.md)
 - [Architecture Guide](docs/ARCHITECTURE.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
@@ -124,7 +233,9 @@ npm test
 
 ### Docker Compose (Development)
 ```bash
-docker-compose up -d
+COMPOSE_PROJECT_NAME=employmentvc docker compose up -d
+COMPOSE_PROJECT_NAME=employmentvc docker compose ps
+COMPOSE_PROJECT_NAME=employmentvc docker compose down
 ```
 
 ### Kubernetes (Production)

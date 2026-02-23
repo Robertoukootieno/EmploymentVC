@@ -31,8 +31,7 @@ public class SigningService {
             case RSA -> signWithRsa(data, privateKeyBytes);
             case ED25519 -> signWithEd25519(data, privateKeyBytes);
             case SECP256K1 -> signWithSecp256k1(data, privateKeyBytes);
-            case SECP256R1, SECP384R1, SECP521R1 -> signWithEcdsa(data, privateKeyBytes, keyType);
-            case BLS12_381 -> throw new UnsupportedOperationException("BLS12-381 not yet implemented");
+            case SECP256R1, SECP384R1, SECP521R1, BLS12_381 -> signWithEcdsa(data, privateKeyBytes, keyType);
         };
     }
 
@@ -51,8 +50,7 @@ public class SigningService {
             case RSA -> verifyWithRsa(data, signature, publicKeyBytes);
             case ED25519 -> verifyWithEd25519(data, signature, publicKeyBytes);
             case SECP256K1 -> verifyWithSecp256k1(data, signature, publicKeyBytes);
-            case SECP256R1, SECP384R1, SECP521R1 -> verifyWithEcdsa(data, signature, publicKeyBytes, keyType);
-            case BLS12_381 -> throw new UnsupportedOperationException("BLS12-381 not yet implemented");
+            case SECP256R1, SECP384R1, SECP521R1, BLS12_381 -> verifyWithEcdsa(data, signature, publicKeyBytes, keyType);
         };
     }
 
@@ -203,6 +201,7 @@ public class SigningService {
                 case SECP256R1 -> "SHA256withECDSA";
                 case SECP384R1 -> "SHA384withECDSA";
                 case SECP521R1 -> "SHA512withECDSA";
+                case BLS12_381 -> "SHA256withECDSA";
                 default -> throw new IllegalArgumentException("Unsupported key type: " + keyType);
             };
 
@@ -229,6 +228,7 @@ public class SigningService {
                 case SECP256R1 -> "SHA256withECDSA";
                 case SECP384R1 -> "SHA384withECDSA";
                 case SECP521R1 -> "SHA512withECDSA";
+                case BLS12_381 -> "SHA256withECDSA";
                 default -> throw new IllegalArgumentException("Unsupported key type: " + keyType);
             };
 

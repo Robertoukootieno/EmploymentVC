@@ -1,5 +1,6 @@
 package io.provenly.auth.service;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.provenly.auth.config.JwtProperties;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@SuppressFBWarnings(value = "EI2", justification = "Injected dependency is managed by Spring and not exposed.")
 public class JwtService {
 
     private final JwtProperties jwtProperties;

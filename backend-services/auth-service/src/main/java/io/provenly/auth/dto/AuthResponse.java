@@ -1,6 +1,6 @@
 package io.provenly.auth.dto;
 
-import lombok.AllArgsConstructor;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
  * Response DTO for authentication operations.
  */
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@SuppressFBWarnings(value = {"EI", "EI2"}, justification = "DTO uses defensive copies for mutable fields.")
 public class AuthResponse {
 
     /**
@@ -32,12 +31,32 @@ public class AuthResponse {
     /**
      * Token type (usually "Bearer").
      */
-    @Builder.Default
     private String tokenType = "Bearer";
 
     /**
      * User information.
      */
     private UserDto user;
+
+    @Builder
+    public AuthResponse(String accessToken,
+                        String refreshToken,
+                        long expiresIn,
+                        String tokenType,
+                        UserDto user) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.expiresIn = expiresIn;
+        this.tokenType = tokenType == null ? "Bearer" : tokenType;
+        this.user = UserDto.copyOf(user);
+    }
+
+    public UserDto getUser() {
+        return UserDto.copyOf(user);
+    }
+
+    public void setUser(UserDto user) {
+        this.user = UserDto.copyOf(user);
+    }
 }
 

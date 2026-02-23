@@ -69,10 +69,10 @@ public class PresentationService {
 
             // Create presentation
             ObjectNode presentation = objectMapper.createObjectNode();
-            presentation.put("@context", objectMapper.createArrayNode()
+            presentation.set("@context", objectMapper.createArrayNode()
                 .add("https://www.w3.org/2018/credentials/v1"));
             presentation.put("id", "urn:uuid:" + UUID.randomUUID());
-            presentation.put("type", objectMapper.createArrayNode()
+            presentation.set("type", objectMapper.createArrayNode()
                 .add("VerifiablePresentation"));
             presentation.put("holder", wallet.getDid());
 

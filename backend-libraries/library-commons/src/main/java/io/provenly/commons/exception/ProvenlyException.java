@@ -77,120 +77,163 @@ public class ProvenlyException extends RuntimeException {
     public boolean hasContext() {
         return context != null && !context.isEmpty();
     }
-}
 
-/**
- * Exception for authentication-related errors.
- */
-class AuthenticationException extends ProvenlyException {
-    public AuthenticationException(String message) {
-        super(message, "AUTH_ERROR", 401);
+    /**
+     * Exception for resource not found errors.
+     */
+    public static class NotFoundException extends ProvenlyException {
+        public NotFoundException(String message) {
+            super(message, "NOT_FOUND", 404);
+        }
+
+        public NotFoundException(String message, Map<String, Object> context) {
+            super(message, "NOT_FOUND", 404, context);
+        }
     }
 
-    public AuthenticationException(String message, Map<String, Object> context) {
-        super(message, "AUTH_ERROR", 401, context);
-    }
-}
+    /**
+     * Exception for conflict errors (e.g., duplicate resources).
+     */
+    public static class ConflictException extends ProvenlyException {
+        public ConflictException(String message) {
+            super(message, "CONFLICT", 409);
+        }
 
-/**
- * Exception for authorization-related errors.
- */
-class AuthorizationException extends ProvenlyException {
-    public AuthorizationException(String message) {
-        super(message, "AUTHZ_ERROR", 403);
-    }
-
-    public AuthorizationException(String message, Map<String, Object> context) {
-        super(message, "AUTHZ_ERROR", 403, context);
-    }
-}
-
-/**
- * Exception for validation errors.
- */
-class ValidationException extends ProvenlyException {
-    public ValidationException(String message) {
-        super(message, "VALIDATION_ERROR", 400);
+        public ConflictException(String message, Map<String, Object> context) {
+            super(message, "CONFLICT", 409, context);
+        }
     }
 
-    public ValidationException(String message, Map<String, Object> context) {
-        super(message, "VALIDATION_ERROR", 400, context);
-    }
-}
+    /**
+     * Exception for internal server errors.
+     */
+    public static class InternalServerException extends ProvenlyException {
+        public InternalServerException(String message) {
+            super(message, "INTERNAL_SERVER_ERROR", 500);
+        }
 
-/**
- * Exception for resource not found errors.
- */
-class ResourceNotFoundException extends ProvenlyException {
-    public ResourceNotFoundException(String message) {
-        super(message, "NOT_FOUND", 404);
-    }
+        public InternalServerException(String message, Map<String, Object> context) {
+            super(message, "INTERNAL_SERVER_ERROR", 500, context);
+        }
 
-    public ResourceNotFoundException(String message, Map<String, Object> context) {
-        super(message, "NOT_FOUND", 404, context);
-    }
-}
-
-/**
- * Exception for credential-related errors.
- */
-class CredentialException extends ProvenlyException {
-    public CredentialException(String message) {
-        super(message, "CREDENTIAL_ERROR", 422);
+        public InternalServerException(String message, Throwable cause) {
+            super(message, "INTERNAL_SERVER_ERROR", 500, null, cause);
+        }
     }
 
-    public CredentialException(String message, Map<String, Object> context) {
-        super(message, "CREDENTIAL_ERROR", 422, context);
+    /**
+     * Exception for authentication-related errors.
+     */
+    public static class AuthenticationException extends ProvenlyException {
+        public AuthenticationException(String message) {
+            super(message, "AUTH_ERROR", 401);
+        }
+
+        public AuthenticationException(String message, Map<String, Object> context) {
+            super(message, "AUTH_ERROR", 401, context);
+        }
     }
 
-    public CredentialException(String message, Throwable cause) {
-        super(message, "CREDENTIAL_ERROR", 422, null, cause);
-    }
-}
+    /**
+     * Exception for authorization-related errors.
+     */
+    public static class AuthorizationException extends ProvenlyException {
+        public AuthorizationException(String message) {
+            super(message, "AUTHZ_ERROR", 403);
+        }
 
-/**
- * Exception for wallet-related errors.
- */
-class WalletException extends ProvenlyException {
-    public WalletException(String message) {
-        super(message, "WALLET_ERROR", 422);
-    }
-
-    public WalletException(String message, Map<String, Object> context) {
-        super(message, "WALLET_ERROR", 422, context);
+        public AuthorizationException(String message, Map<String, Object> context) {
+            super(message, "AUTHZ_ERROR", 403, context);
+        }
     }
 
-    public WalletException(String message, Throwable cause) {
-        super(message, "WALLET_ERROR", 422, null, cause);
-    }
-}
+    /**
+     * Exception for validation errors.
+     */
+    public static class ValidationException extends ProvenlyException {
+        public ValidationException(String message) {
+            super(message, "VALIDATION_ERROR", 400);
+        }
 
-/**
- * Exception for cryptographic operation errors.
- */
-class CryptographicException extends ProvenlyException {
-    public CryptographicException(String message) {
-        super(message, "CRYPTO_ERROR", 500);
-    }
-
-    public CryptographicException(String message, Throwable cause) {
-        super(message, "CRYPTO_ERROR", 500, null, cause);
-    }
-}
-
-/**
- * Exception for DID-related errors.
- */
-class DidException extends ProvenlyException {
-    public DidException(String message) {
-        super(message, "DID_ERROR", 422);
+        public ValidationException(String message, Map<String, Object> context) {
+            super(message, "VALIDATION_ERROR", 400, context);
+        }
     }
 
-    public DidException(String message, Map<String, Object> context) {
-        super(message, "DID_ERROR", 422, context);
+    /**
+     * Exception for resource not found errors.
+     */
+    public static class ResourceNotFoundException extends ProvenlyException {
+        public ResourceNotFoundException(String message) {
+            super(message, "NOT_FOUND", 404);
+        }
+
+        public ResourceNotFoundException(String message, Map<String, Object> context) {
+            super(message, "NOT_FOUND", 404, context);
+        }
     }
 
-    public DidException(String message, Throwable cause) {
-        super(message, "DID_ERROR", 422, null, cause);
+    /**
+     * Exception for credential-related errors.
+     */
+    public static class CredentialException extends ProvenlyException {
+        public CredentialException(String message) {
+            super(message, "CREDENTIAL_ERROR", 422);
+        }
+
+        public CredentialException(String message, Map<String, Object> context) {
+            super(message, "CREDENTIAL_ERROR", 422, context);
+        }
+
+        public CredentialException(String message, Throwable cause) {
+            super(message, "CREDENTIAL_ERROR", 422, null, cause);
+        }
+    }
+
+    /**
+     * Exception for wallet-related errors.
+     */
+    public static class WalletException extends ProvenlyException {
+        public WalletException(String message) {
+            super(message, "WALLET_ERROR", 422);
+        }
+
+        public WalletException(String message, Map<String, Object> context) {
+            super(message, "WALLET_ERROR", 422, context);
+        }
+
+        public WalletException(String message, Throwable cause) {
+            super(message, "WALLET_ERROR", 422, null, cause);
+        }
+    }
+
+    /**
+     * Exception for cryptographic operation errors.
+     */
+    public static class CryptographicException extends ProvenlyException {
+        public CryptographicException(String message) {
+            super(message, "CRYPTO_ERROR", 500);
+        }
+
+        public CryptographicException(String message, Throwable cause) {
+            super(message, "CRYPTO_ERROR", 500, null, cause);
+        }
+    }
+
+    /**
+     * Exception for DID-related errors.
+     */
+    public static class DidException extends ProvenlyException {
+        public DidException(String message) {
+            super(message, "DID_ERROR", 422);
+        }
+
+        public DidException(String message, Map<String, Object> context) {
+            super(message, "DID_ERROR", 422, context);
+        }
+
+        public DidException(String message, Throwable cause) {
+            super(message, "DID_ERROR", 422, null, cause);
+        }
     }
 }

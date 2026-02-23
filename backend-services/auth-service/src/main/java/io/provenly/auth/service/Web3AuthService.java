@@ -1,5 +1,6 @@
 package io.provenly.auth.service;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.provenly.auth.dto.Web3ChallengeResponse;
 import io.provenly.commons.exception.ProvenlyException;
 import io.provenly.crypto.util.HashUtils;
@@ -23,11 +24,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Slf4j
+@SuppressFBWarnings(value = "EI2", justification = "Injected dependency is managed by Spring and not exposed.")
 public class Web3AuthService {
 
     private static final String CHALLENGE_PREFIX = "web3:challenge:";
     private static final int CHALLENGE_EXPIRATION_MINUTES = 5;
-    private static final String MESSAGE_TEMPLATE = "Sign this message to authenticate with Provenly:\n\nNonce: %s\nIssued At: %s";
+    private static final String MESSAGE_TEMPLATE = "Sign this message to authenticate with Provenly:%n%nNonce: %s%nIssued At: %s";
 
     private final RedisTemplate<String, String> redisTemplate;
 

@@ -1,0 +1,67 @@
+groups:
+  - name: employmentvc-service-alerts
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service is down"
+          description: "{{ $labels.job }} is not responding."
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "{{ $labels.job }} is returning 5xx errors at a high rate."
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, job)) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency detected"
+          description: "{{ $labels.job }} 95th percentile latency > 2s."
+      - alert: ContainerMemoryUsage
+        expr: container_memory_usage_bytes{job=~".*"} > 2e+9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container memory usage high"
+          description: "{{ $labels.job }} memory usage > 2GB."
+      - alert: ContainerRestarted
+        expr: increase(container_restart_count{job=~".*"}[10m]) > 0
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Container restarted"
+          description: "{{ $labels.job }} has restarted in the last 10 minutes."
+      - alert: HighCPUUsage
+        expr: sum(rate(container_cpu_usage_seconds_total{job=~".*"}[5m])) by (job) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "{{ $labels.job }} CPU usage > 80%."
+      - alert: DatabaseConnectionFailures
+        expr: rate(db_connection_errors_total[5m]) > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection failures"
+          description: "{{ $labels.job }} is experiencing database connection errors."
+      - alert: SlowServiceResponse
+        expr: avg_over_time(http_request_duration_seconds_sum[5m]) / avg_over_time(http_request_duration_seconds_count[5m]) > 3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow service response"
+          description: "{{ $labels.job }} average response time > 3s."

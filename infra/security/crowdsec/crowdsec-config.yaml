@@ -1,0 +1,137 @@
+# CrowdSec Configuration for EmploymentVC
+# Intrusion Detection System (IDS) for real-time threat detection
+
+# Common settings
+common:
+  daemonize: true
+  pid_dir: /var/run
+  log_dir: /var/log/crowdsec
+  working_dir: /var/lib/crowdsec/
+  state_input_file: /var/lib/crowdsec/backup/crowdsec-state.json
+  console_output: false
+  log_level: info
+  compress_logs: true
+
+# Crowdsec runner settings  
+crowdsec_service:
+  bg_profile_file: /etc/crowdsec/profiles.yaml
+  simulation_file: /etc/crowdsec/simulation.yaml
+  console_output: false
+  log_level: info
+
+# Local API server
+api:
+  server:
+    log_level: info
+    listen_uri: 127.0.0.1:8080
+    profiles_path: /etc/crowdsec/profiles.yaml
+    console_output: false
+    enable_peering: true
+    enable_console_api: true
+
+# LAPI Bouncer
+bouncer_ui:
+  enabled: true
+  listen_uri: 127.0.0.1:7000
+
+# Data sources (log files to analyze)
+datasources:
+  files_enabled: true
+  journalctl_enabled: false
+  cloudwatch_enabled: false
+  kinesis_enabled: false
+  s3_enabled: false
+  syslog_enabled: false
+
+# Database configuration
+db_config:
+  log_level: info
+  type: sqlite
+  db_path: /var/lib/crowdsec/crowdsec.db
+  flush:
+    max_items: 5000
+    max_age: 72h
+  max_open_conns: 100
+
+# Output configuration (send alerts/bans)
+outputs:
+  - backend_type: file
+    backend_config:
+      filename: /var/log/crowdsec/crowdsec-output.json
+  - backend_type: loki
+    enabled: false
+    backend_config:
+      loki_url: http://loki:3100
+      tenant_id: crowdsec
+
+# Crowdsec Hub
+hub:
+  hub_branch: master
+
+# Logging configuration
+logging:
+  level: info
+  format: json
+  outputs:
+    - stdout
+    - file:
+        filename: /var/log/crowdsec/crowdsec.log
+        max_size: 100
+        max_age: 30
+        max_backups: 3
+        compress: true
+
+# Plugin directory
+plugins_dir: /usr/local/lib/crowdsec/plugins
+
+# Scenarios/collections to download during setup
+# These are security rules for detecting malicious activity
+scenarios_enabled:
+  # IDS rules for detecting attacks
+  - crowdsecurity/nginx-plugins
+  - crowdsecurity/generic_http_bf
+  - crowdsecurity/http_crawlers_robots
+  - crowdsecurity/http_slow_requests
+  - crowdsecurity/http_sqlinjection
+  - crowdsecurity/http_xss_attempt
+  - crowdsecurity/http_path_traversal
+  - crowdsecurity/http_bad_user_agent
+  - crowdsecurity/http_probing
+  - crowdsecurity/apache_plugins
+  - crowdsecurity/modsecurity
+  - crowdsecurity/fail2ban
+
+collections_enabled:
+  - crowdsecurity/sshguard
+  - crowdsecurity/base-http-scenarios
+  - crowdsecurity/modsecurity-logs
+  - crowdsecurity/nginx-http-logs
+  - crowdsecurity/nginx-index
+  - crowdsecurity/base-http-plugins
+
+# Performance settings
+performance:
+  max_workers: 4
+  cache_size: 10000
+
+# HTTPS settings for LAPI
+tls:
+  enabled: false
+  # Once enabled, generate certificates:
+  # certs_dir: /etc/crowdsec/ssl/
+  # cert_file: /etc/crowdsec/ssl/cert.pem
+  # key_file: /etc/crowdsec/ssl/key.pem
+
+# Community blocklist settings
+blocklists:
+  enabled: true
+  feeds:
+    - https://blocklist.crowdsec.net/lists/ip_reputation.txt
+  update_frequency: 24h
+  cache_dir: /var/lib/crowdsec/blocklists
+  timeout: 30s
+
+# Geolocation (optional, requires GeoIP database)
+geoip:
+  enabled: false
+  # database_path: /usr/share/GeoIP/GeoLite2-City.mmdb

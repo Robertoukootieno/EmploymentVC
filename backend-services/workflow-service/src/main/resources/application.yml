@@ -1,0 +1,59 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: workflow-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/employmentvc_workflow}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+workflow:
+  employment:
+    onboarding-steps:
+      - identity-verification
+      - credential-issuance
+      - wallet-setup
+    offboarding-steps:
+      - credential-revocation
+      - access-removal
+  orchestration:
+    max-retries: 3
+    timeout: 300
+
+issuer-service:
+  url: ${ISSUER_SERVICE_URL:http://localhost:8083}
+
+verifier-service:
+  url: ${VERIFIER_SERVICE_URL:http://localhost:8084}
+
+wallet-service:
+  url: ${WALLET_SERVICE_URL:http://localhost:8087}
+
+notification-service:
+  url: ${NOTIFICATION_SERVICE_URL:http://localhost:8090}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.employmentvc.workflow: DEBUG

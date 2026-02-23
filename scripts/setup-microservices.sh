@@ -10,7 +10,7 @@ echo "🚀 Setting up Provenly Employment VC Platform Microservices..."
 # Define services
 SERVICES=(
     "auth-service"
-    "credential-schema-registry"
+    "schema-registry"
     "provenly-issuer-service"
     "provenly-verifier-service"
     "provenly-holder-wallet"
@@ -20,7 +20,7 @@ SERVICES=(
 # Define service ports
 declare -A SERVICE_PORTS=(
     ["auth-service"]="3001"
-    ["credential-schema-registry"]="3003"
+    ["schema-registry"]="8086"
     ["provenly-issuer-service"]="3004"
     ["provenly-verifier-service"]="3005"
     ["provenly-holder-wallet"]="3006"

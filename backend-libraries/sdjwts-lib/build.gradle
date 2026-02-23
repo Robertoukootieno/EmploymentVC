@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+}
+
+description = 'Provenly SD-JWT Library - selective disclosure JWT helpers'
+
+dependencies {
+    api project(':library-commons')
+    api project(':crypto-core')
+
+    api 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+}

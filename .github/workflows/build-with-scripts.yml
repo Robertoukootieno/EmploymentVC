@@ -1,0 +1,129 @@
+name: Build with Scripts
+
+# Alternative build workflow using custom build scripts
+# This workflow leverages the build scripts in infra/docker/build-scripts/
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to build (leave empty for all)'
+        required: false
+        type: string
+      tag:
+        description: 'Docker image tag'
+        required: false
+        default: 'latest'
+        type: string
+      push:
+        description: 'Push to registry'
+        required: false
+        default: true
+        type: boolean
+  push:
+    branches: [main, develop]
+    paths:
+      - 'infra/docker/build-scripts/**'
+      - 'backend-services/**'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Build all services using the build-all-multiarch.sh script
+  build-all-services:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.service == '' || github.event.inputs.service == null }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure Buildx
+        run: |
+          chmod +x infra/docker/setup-buildx.sh
+          ./infra/docker/setup-buildx.sh provenly-builder
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build all services
+        run: |
+          chmod +x infra/docker/build-scripts/build-all-multiarch.sh
+          TAG=${{ github.event.inputs.tag || 'latest' }}
+          PUSH_FLAG=""
+          if [ "${{ github.event.inputs.push }}" = "true" ] || [ "${{ github.event_name }}" = "push" ]; then
+            PUSH_FLAG="--push"
+          fi
+          ./infra/docker/build-scripts/build-all-multiarch.sh \
+            ${{ env.REGISTRY }}/$(echo ${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]') \
+            $TAG \
+            $PUSH_FLAG
+
+      - name: Build summary
+        run: |
+          echo "### Build Complete! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** \`${{ env.REGISTRY }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** \`${{ github.event.inputs.tag || 'latest' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Pushed:** \`${{ github.event.inputs.push || 'true' }}\`" >> $GITHUB_STEP_SUMMARY
+
+  # Build single service using the build-service.sh script
+  build-single-service:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.service != '' && github.event.inputs.service != null }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure Buildx
+        run: |
+          chmod +x infra/docker/setup-buildx.sh
+          ./infra/docker/setup-buildx.sh provenly-builder
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build service
+        run: |
+          chmod +x infra/docker/build-scripts/build-service.sh
+          TAG=${{ github.event.inputs.tag || 'latest' }}
+          PUSH_FLAG=""
+          if [ "${{ github.event.inputs.push }}" = "true" ]; then
+            PUSH_FLAG="--push"
+          fi
+          ./infra/docker/build-scripts/build-service.sh \
+            ${{ github.event.inputs.service }} \
+            ${{ env.REGISTRY }}/$(echo ${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]') \
+            $TAG \
+            $PUSH_FLAG \
+            --platform linux/amd64,linux/arm64
+
+      - name: Build summary
+        run: |
+          echo "### Build Complete! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Service:** \`${{ github.event.inputs.service }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** \`${{ env.REGISTRY }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** \`${{ github.event.inputs.tag || 'latest' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Pushed:** \`${{ github.event.inputs.push }}\`" >> $GITHUB_STEP_SUMMARY

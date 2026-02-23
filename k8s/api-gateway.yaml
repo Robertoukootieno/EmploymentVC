@@ -72,11 +72,11 @@ spec:
             configMapKeyRef:
               name: provenly-config
               key: DID_REGISTRY_URL
-        - name: CREDENTIAL_SCHEMA_REGISTRY_URL
+        - name: SCHEMA_REGISTRY_URL
           valueFrom:
             configMapKeyRef:
               name: provenly-config
-              key: CREDENTIAL_SCHEMA_REGISTRY_URL
+              key: SCHEMA_REGISTRY_URL
         - name: ISSUER_SERVICE_URL
           valueFrom:
             configMapKeyRef:

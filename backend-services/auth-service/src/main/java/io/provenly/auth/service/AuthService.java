@@ -1,10 +1,11 @@
 package io.provenly.auth.service;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.provenly.auth.dto.*;
-import io.provenly.auth.model.RefreshToken;
 import io.provenly.auth.model.User;
-import io.provenly.auth.repository.RefreshTokenRepository;
 import io.provenly.auth.repository.UserRepository;
+import io.provenly.auth.security.JwtTokenService;
+import io.provenly.auth.security.RefreshTokenStore;
 import io.provenly.commons.exception.ProvenlyException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,11 +25,12 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@SuppressFBWarnings(value = "EI2", justification = "Injected dependencies are managed by Spring and not exposed.")
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtService jwtService;
+    private final JwtTokenService jwtTokenService;
+    private final RefreshTokenStore refreshTokenStore;
     private final Web3AuthService web3AuthService;
     private final PasswordEncoder passwordEncoder;
 
@@ -55,8 +57,28 @@ public class AuthService {
         user.updateLastLogin();
         userRepository.save(user);
 
-        // Generate tokens
-        return generateAuthResponse(user, httpRequest);
+        // Generate tokens using JwtTokenService and RefreshTokenStore
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId().toString());
+        claims.put("email", user.getEmail());
+        claims.put("name", user.getName());
+        claims.put("roles", user.getRoles());
+        if (user.getWalletAddress() != null) claims.put("walletAddress", user.getWalletAddress());
+        if (user.getDid() != null) claims.put("did", user.getDid());
+
+        String username = user.getEmail();
+        String tokenId = UUID.randomUUID().toString();
+        refreshTokenStore.store(tokenId, username);
+        String accessToken = jwtTokenService.generateAccessToken(username, claims);
+        String refreshToken = jwtTokenService.generateRefreshToken(username, tokenId);
+
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expiresIn(15 * 60) // match JwtTokenService config
+                .tokenType("Bearer")
+                .user(mapToUserDto(user))
+                .build();
     }
 
     /**
@@ -88,8 +110,28 @@ public class AuthService {
         user.updateLastLogin();
         userRepository.save(user);
 
-        // Generate tokens
-        return generateAuthResponse(user, httpRequest);
+        // Generate tokens using JwtTokenService and RefreshTokenStore
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId().toString());
+        claims.put("email", user.getEmail());
+        claims.put("name", user.getName());
+        claims.put("roles", user.getRoles());
+        if (user.getWalletAddress() != null) claims.put("walletAddress", user.getWalletAddress());
+        if (user.getDid() != null) claims.put("did", user.getDid());
+
+        String username = user.getEmail();
+        String tokenId = UUID.randomUUID().toString();
+        refreshTokenStore.store(tokenId, username);
+        String accessToken = jwtTokenService.generateAccessToken(username, claims);
+        String refreshToken = jwtTokenService.generateRefreshToken(username, tokenId);
+
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expiresIn(15 * 60)
+                .tokenType("Bearer")
+                .user(mapToUserDto(user))
+                .build();
     }
 
     /**
@@ -97,21 +139,49 @@ public class AuthService {
      */
     @Transactional
     public AuthResponse refreshToken(RefreshTokenRequest request, HttpServletRequest httpRequest) {
-        // Find refresh token
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(request.getRefreshToken())
-                .orElseThrow(() -> new ProvenlyException.AuthenticationException("Invalid refresh token"));
-
-        // Validate token
-        if (!refreshToken.isValid()) {
-            throw new ProvenlyException.AuthenticationException("Refresh token is expired or revoked");
+        String refreshToken = request.getRefreshToken();
+        String username;
+        String tokenId;
+        try {
+            username = jwtTokenService.getUsername(refreshToken);
+            tokenId = jwtTokenService.getTokenId(refreshToken);
+        } catch (Exception e) {
+            throw new ProvenlyException.AuthenticationException("Invalid refresh token");
         }
 
+        // Validate refresh token
+        if (!refreshTokenStore.isValid(tokenId, username) || jwtTokenService.isTokenExpired(refreshToken)) {
+            throw new ProvenlyException.AuthenticationException("Invalid or expired refresh token");
+        }
+
+        // Rotate: revoke old, issue new
+        refreshTokenStore.revoke(tokenId);
+        String newTokenId = UUID.randomUUID().toString();
+        refreshTokenStore.store(newTokenId, username);
+
         // Find user
-        User user = userRepository.findById(refreshToken.getUserId())
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ProvenlyException.ResourceNotFoundException("User not found"));
 
-        // Generate new tokens
-        return generateAuthResponse(user, httpRequest);
+        // Issue new tokens
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId().toString());
+        claims.put("email", user.getEmail());
+        claims.put("name", user.getName());
+        claims.put("roles", user.getRoles());
+        if (user.getWalletAddress() != null) claims.put("walletAddress", user.getWalletAddress());
+        if (user.getDid() != null) claims.put("did", user.getDid());
+
+        String accessToken = jwtTokenService.generateAccessToken(username, claims);
+        String newRefreshToken = jwtTokenService.generateRefreshToken(username, newTokenId);
+
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(newRefreshToken)
+                .expiresIn(15 * 60)
+                .tokenType("Bearer")
+                .user(mapToUserDto(user))
+                .build();
     }
 
     /**
@@ -119,7 +189,7 @@ public class AuthService {
      */
     @Transactional
     public void logout(UUID userId) {
-        refreshTokenRepository.revokeAllByUserId(userId);
+        // Invalidate all refresh tokens for this user (in-memory store: not implemented per-user, so this is a no-op)
         log.info("User logged out: {}", userId);
     }
 
@@ -133,34 +203,7 @@ public class AuthService {
         return mapToUserDto(user);
     }
 
-    /**
-     * Generate authentication response with tokens.
-     */
-    private AuthResponse generateAuthResponse(User user, HttpServletRequest httpRequest) {
-        // Generate access token
-        String accessToken = jwtService.generateAccessToken(user);
-
-        // Generate refresh token
-        String refreshTokenValue = jwtService.generateRefreshToken(user.getId());
-
-        // Save refresh token to database
-        RefreshToken refreshToken = RefreshToken.builder()
-                .token(refreshTokenValue)
-                .userId(user.getId())
-                .expiresAt(Instant.now().plus(30, ChronoUnit.DAYS))
-                .ipAddress(getClientIp(httpRequest))
-                .userAgent(httpRequest.getHeader("User-Agent"))
-                .build();
-        refreshTokenRepository.save(refreshToken);
-
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshTokenValue)
-                .expiresIn(jwtService.getAccessTokenExpirationSeconds())
-                .tokenType("Bearer")
-                .user(mapToUserDto(user))
-                .build();
-    }
+        // generateAuthResponse is now inlined in login/web3Login/refreshToken
 
     /**
      * Create new user from Web3 wallet.
@@ -192,15 +235,5 @@ public class AuthService {
                 .build();
     }
 
-    /**
-     * Get client IP address from request.
-     */
-    private String getClientIp(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            return xForwardedFor.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
 }
 

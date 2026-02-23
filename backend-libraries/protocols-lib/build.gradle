@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+description = 'Provenly Protocols Library - protocol envelope and messaging helpers'
+
+dependencies {
+    api project(':library-commons')
+    api project(':utils-lib')
+}

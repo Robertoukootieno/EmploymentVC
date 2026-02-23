@@ -1,0 +1,56 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: issuer-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/employmentvc_issuer}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+issuer:
+  did: ${ISSUER_DID}
+  key-id: ${ISSUER_KEY_ID}
+  credential:
+    default-context:
+      - https://www.w3.org/2018/credentials/v1
+      - https://w3id.org/security/suites/jws-2020/v1
+    expiration-days: 365
+    proof-purpose: assertionMethod
+
+vault:
+  url: ${VAULT_URL:http://localhost:8200}
+  token: ${VAULT_TOKEN}
+  secret-path: ${VAULT_SECRET_PATH:secret/issuer}
+
+opa:
+  url: ${OPA_URL:http://localhost:8181}
+  policy-path: /v1/data/issuance
+
+schema-registry:
+  url: ${SCHEMA_REGISTRY_URL:http://localhost:8086}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.employmentvc.issuer: DEBUG

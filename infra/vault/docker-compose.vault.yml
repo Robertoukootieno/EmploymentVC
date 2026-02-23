@@ -1,0 +1,46 @@
+
+name: ${COMPOSE_PROJECT_NAME:-employmentvc-vault}
+
+services:
+  vault:
+    image: hashicorp/vault:1.15
+    restart: unless-stopped
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root
+      VAULT_ADDR: http://0.0.0.0:8200
+      VAULT_LOCAL_CONFIG: |
+        listener "tcp" {
+          address     = "0.0.0.0:8200"
+          tls_disable = 1
+        }
+        storage "file" {
+          path = "/vault/data"
+        }
+        ui = true
+    volumes:
+      - ./vault-config.hcl:/vault/config/vault-config.hcl:ro
+      - vault-data:/vault/data
+    networks:
+      - employmentvc
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+volumes:
+  vault-data:
+    driver: local
+
+networks:
+  employmentvc:
+    external: true
+    name: ${EMPLOYMENTVC_SHARED_NETWORK:-employmentvc-network}

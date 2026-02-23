@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'employmentvc-services'
+    static_configs:
+      - targets: ['api-gateway:8080', 'auth-service:8080', 'issuer-api:8080', 'verifier-api:8080']
+
+rule_files:
+  - /etc/prometheus/rules/*.yml

@@ -1,0 +1,89 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - StripPrefix=2
+        
+        - id: issuer-service
+          uri: lb://issuer-service
+          predicates:
+            - Path=/api/v1/issuer/**
+          filters:
+            - StripPrefix=2
+        
+        - id: verifier-service
+          uri: lb://verifier-service
+          predicates:
+            - Path=/api/v1/verifier/**
+          filters:
+            - StripPrefix=2
+        
+        - id: wallet-service
+          uri: lb://custodial-wallet
+          predicates:
+            - Path=/api/v1/wallet/**
+          filters:
+            - StripPrefix=2
+        
+        - id: did-registry
+          uri: lb://did-registry
+          predicates:
+            - Path=/api/v1/did/**
+          filters:
+            - StripPrefix=2
+        
+        - id: schema-registry
+          uri: lb://schema-registry
+          predicates:
+            - Path=/api/v1/schemas/**
+          filters:
+            - StripPrefix=2
+        
+        - id: workflow-service
+          uri: lb://workflow-service
+          predicates:
+            - Path=/api/v1/workflow/**
+          filters:
+            - StripPrefix=2
+      
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.employmentvc: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
