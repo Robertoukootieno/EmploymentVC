@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'checkstyle'
+    id 'com.github.spotbugs'
+}
+
+description = 'API Gateway - Service routing and load balancing'
+
+dependencies {
+    // Spring Boot starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Spring Cloud Gateway
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    
+    // Service discovery
+    implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-fabric8'
+
+    // Internal libraries
+    implementation project(':library-commons')
+    implementation project(':utils-lib')
+    
+    // OpenAPI documentation
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    
+    // Monitoring
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+
+    // Security enhancements
+    // Rate limiting - token bucket algorithm
+    implementation 'com.bucket4j:bucket4j-core:8.10.1'
+    
+    // Input validation and sanitization
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+    
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+}
+
+springBoot {
+    mainClass = 'io.provenly.apigateway.ApiGatewayApplication'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

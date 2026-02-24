@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: employmentvc
+  labels:
+    name: employmentvc
+    monitoring: enabled
+    istio-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: employmentvc-dev
+  labels:
+    name: employmentvc-dev
+    environment: development
+    monitoring: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: employmentvc-staging
+  labels:
+    name: employmentvc-staging
+    environment: staging
+    monitoring: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: employmentvc-prod
+  labels:
+    name: employmentvc-prod
+    environment: production
+    monitoring: enabled
+    istio-injection: enabled

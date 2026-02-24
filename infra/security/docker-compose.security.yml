@@ -1,0 +1,187 @@
+name: ${COMPOSE_PROJECT_NAME:-employmentvc-security}
+
+services:
+  # ModSecurity + nginx WAF
+  nginx-modsecurity:
+    image: owasp/modsecurity-nginx:latest
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "80:80"
+      - "8080:8080"  # Metrics endpoint
+    volumes:
+      # Configuration
+      - ./modsecurity/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./modsecurity/modsecurity.conf:/etc/modsecurity.d/modsecurity.conf:ro
+      - ./modsecurity/custom-rules.conf:/etc/modsecurity.d/custom-rules.conf:ro
+      
+      # SSL certificates (generate beforehand)
+      - ./certs/cert.pem:/etc/nginx/ssl/cert.pem:ro
+      - ./certs/key.pem:/etc/nginx/ssl/key.pem:ro
+      - ./certs/chain.pem:/etc/nginx/ssl/chain.pem:ro
+      
+      # Logs
+      - nginx-logs:/var/log/nginx
+      - modsecurity-logs:/var/log/modsecurity
+    
+    environment:
+      - ACCESSLOG=/var/log/nginx/access.log
+      - ERRORLOG=/var/log/nginx/error.log
+      - LOGLEVEL=warn
+      - TZ=UTC
+    
+    networks:
+      - employmentvc-security
+      - employmentvc
+    
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/nginx_status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+        labels: "service=nginx-waf"
+
+  # CrowdSec IDS/IPS
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    restart: unless-stopped
+    volumes:
+      # Configuration
+      - ./crowdsec/crowdsec-config.yaml:/etc/crowdsec/config.yaml:ro
+      - ./crowdsec/acquirers.yaml:/etc/crowdsec/acquirers.yaml:ro
+      
+      # Data persistence
+      - crowdsec-db:/var/lib/crowdsec
+      - crowdsec-config:/etc/crowdsec
+      
+      # Logs to monitor
+      - nginx-logs:/var/log/nginx:ro
+      - modsecurity-logs:/var/log/modsecurity:ro
+      - api-gateway-logs:/var/log/employmentvc/api-gateway:ro
+      - auth-service-logs:/var/log/employmentvc/auth-service:ro
+    
+    environment:
+      COLLECTIONS: "crowdsecurity/sshguard crowdsecurity/base-http-scenarios crowdsecurity/modsecurity-logs"
+      SCENARIOS: "crowdsecurity/http_crawlers_robots crowdsecurity/http_sqlinjection crowdsecurity/http_xss_attempt"
+      TZ: UTC
+    
+    networks:
+      - employmentvc-security
+    
+    healthcheck:
+      test: ["CMD", "cscli", "version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+        labels: "service=crowdsec"
+
+  # CrowdSec Bouncer (integration with nginx/ModSecurity)
+  crowdsec-bouncer:
+    image: crowdsecurity/cs-nginx-bouncer:latest
+    restart: unless-stopped
+    volumes:
+      - crowdsec-bouncer:/etc/crowdsec/bouncers
+    
+    environment:
+      CROWDSEC_API_URL: http://crowdsec:8080
+      CROWDSEC_AGENT_USERNAME: admin
+      CROWDSEC_AGENT_PASSWORD: "${CROWDSEC_AGENT_PASSWORD:-mypassword}"
+      BOUNCER_API_KEY: "${CROWDSEC_BOUNCER_API_KEY:-changeme-bouncer-key}"
+      PLUGIN_MODE: "true"
+      CACHE_EXPIRATION: 300
+    
+    networks:
+      - employmentvc-security
+    
+    depends_on:
+      - crowdsec
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+        labels: "service=crowdsec-bouncer"
+
+  # CrowdSec UI (Dashboard)
+  crowdsec-ui:
+    image: crowdsecurity/metabase-dashboard:latest
+    restart: unless-stopped
+    ports:
+      - "3001:3000"   # Access at http://localhost:3001
+    volumes:
+      - crowdsec-ui-data:/metabase-data
+    
+    environment:
+      MB_DB_FILE: /metabase-data/metabase.db
+      CROWDSEC_URL: http://crowdsec:8080
+      CROWDSEC_API_KEY: "${CROWDSEC_API_KEY:-changeme-ui-key}"
+    
+    networks:
+      - employmentvc-security
+    
+    depends_on:
+      - crowdsec
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+        labels: "service=crowdsec-ui"
+
+volumes:
+  nginx-logs:
+    driver: local
+  modsecurity-logs:
+    driver: local
+  api-gateway-logs:
+    driver: local
+  auth-service-logs:
+    driver: local
+  crowdsec-db:
+    driver: local
+  crowdsec-config:
+    driver: local
+  crowdsec-bouncer:
+    driver: local
+  crowdsec-ui-data:
+    driver: local
+
+networks:
+  employmentvc-security:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+  employmentvc:
+    external: true
+    name: ${EMPLOYMENTVC_SHARED_NETWORK:-employmentvc-network}

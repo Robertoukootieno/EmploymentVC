@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: employmentvc-sa
+  namespace: employmentvc
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: employmentvc-role
+  namespace: employmentvc
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: employmentvc-rolebinding
+  namespace: employmentvc
+subjects:
+  - kind: ServiceAccount
+    name: employmentvc-sa
+    namespace: employmentvc
+roleRef:
+  kind: Role
+  name: employmentvc-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Pod Security Policy for production
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: employmentvc-psp
+  namespace: employmentvc
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+  readOnlyRootFilesystem: false

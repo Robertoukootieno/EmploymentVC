@@ -1,0 +1,79 @@
+# CrowdSec Log Acquirers Configuration
+# Define which logs to monitor and how to parse them
+
+acquisitions:
+  # Monitor nginx access logs from ModSecurity WAF
+  - source: file
+    labels:
+      type: http_access
+    log_level: info
+    filename: /var/log/nginx/access.log
+    poll_without_inotify: false
+    parser: nginx
+
+  # Monitor nginx error logs
+  - source: file
+    labels:
+      type: http_error
+    log_level: info
+    filename: /var/log/nginx/error.log
+    poll_without_inotify: false
+    parser: nginx-errors
+
+  # Monitor ModSecurity audit logs
+  - source: file
+    labels:
+      type: modsecurity
+    log_level: info
+    filename: /var/log/modsecurity/audit.log
+    poll_without_inotify: false
+    parser: modsecurity-logs
+
+  # Monitor API Gateway logs (if available)
+  - source: file
+    labels:
+      type: api_gateway
+    log_level: info
+    filename: /var/log/employmentvc/api-gateway/application.log
+    poll_without_inotify: false
+    parser: spring-boot
+    filter: "java"
+
+  # Monitor Auth Service logs (if available)
+  - source: file
+    labels:
+      type: auth_service
+    log_level: info
+    filename: /var/log/employmentvc/auth-service/application.log
+    poll_without_inotify: false
+    parser: spring-boot
+    filter: "java"
+
+  # Monitor DID Registry logs (if available)
+  - source: file
+    labels:
+      type: did_registry
+    log_level: info
+    filename: /var/log/employmentvc/did-registry/application.log
+    poll_without_inotify: false
+    parser: spring-boot
+    filter: "java"
+
+  # Monitor system auth logs (failed logins)
+  - source: file
+    labels:
+      type: syslog
+    log_level: info
+    filename: /var/log/auth.log
+    poll_without_inotify: false
+    parser: syslog-rfc3164
+    filter: "sshd"
+
+  # Monitor syslog
+  - source: file
+    labels:
+      type: syslog_events
+    log_level: info  
+    filename: /var/log/syslog
+    poll_without_inotify: false
+    parser: syslog-rfc3164

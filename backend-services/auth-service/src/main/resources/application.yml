@@ -1,0 +1,59 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/employmentvc_auth}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+keycloak:
+  realm: ${KEYCLOAK_REALM:employmentvc}
+  auth-server-url: ${KEYCLOAK_URL:http://localhost:8180/auth}
+  ssl-required: external
+  resource: ${KEYCLOAK_CLIENT_ID:auth-service}
+  credentials:
+    secret: ${KEYCLOAK_CLIENT_SECRET}
+
+did:
+  auth:
+    enabled: true
+    challenge-ttl: 300
+    
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: 3600
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+logging:
+  level:
+    com.employmentvc.auth: DEBUG
+    org.springframework.security: INFO
+
+    operations-sorter: method
+    tags-sorter: alpha
+  show-actuator: true
+

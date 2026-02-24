@@ -31,9 +31,9 @@ scrape_configs:
     metrics_path: '/metrics'
     scrape_interval: 30s
 
-  - job_name: 'credential-schema-registry'
+  - job_name: 'schema-registry'
     static_configs:
-      - targets: ['credential-schema-registry:3003']
+      - targets: ['schema-registry:8086']
     metrics_path: '/metrics'
     scrape_interval: 30s
 

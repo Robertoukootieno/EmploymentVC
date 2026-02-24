@@ -1,0 +1,206 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallet-api
+  namespace: provenly
+  labels:
+    app: wallet-api
+    component: wallet
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wallet-api
+  template:
+    metadata:
+      labels:
+        app: wallet-api
+        component: wallet
+        tier: backend
+    spec:
+      containers:
+      - name: wallet-api
+        image: ghcr.io/robertoukootieno/employmentvc/wallet-api:latest
+        ports:
+        - containerPort: 8082
+        env:
+        # Application Configuration
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: SPRING_PROFILES_ACTIVE
+              optional: true
+        - name: PORT
+          value: "8082"
+        
+        # Database Configuration
+        - name: DATABASE_URL
+          value: "jdbc:postgresql://postgres-service:5432/$(POSTGRES_DB)"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: POSTGRES_USER
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: POSTGRES_DB
+        
+        # Redis Configuration
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: REDIS_PASSWORD
+              optional: true
+        
+        # JWT Configuration (shared with Auth Service)
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: JWT_SECRET
+        - name: JWT_ISSUER
+          value: "provenly-auth-service"
+        - name: JWT_AUDIENCE
+          value: "provenly-platform"
+        
+        # Wallet Configuration
+        - name: WALLET_ENCRYPTION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: provenly-secrets
+              key: WALLET_ENCRYPTION_PASSWORD
+        - name: DID_DEFAULT_METHOD
+          value: "ebsi"
+        - name: DID_SUPPORTED_METHODS
+          value: "ebsi,key,web,ion"
+        
+        # Keycloak Integration (optional for future use)
+        - name: KEYCLOAK_URL
+          value: "http://keycloak-service:8080"
+        - name: KEYCLOAK_REALM
+          value: "provenly"
+        - name: KEYCLOAK_CLIENT_ID
+          value: "backend-services"
+        - name: KEYCLOAK_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-secrets
+              key: BACKEND_SERVICES_SECRET
+        
+        # External Services
+        - name: BESU_RPC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: BESU_RPC_URL
+        - name: EBSI_API_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: provenly-config
+              key: EBSI_API_BASE_URL
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8082
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8082
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-api-service
+  namespace: provenly
+  labels:
+    app: wallet-api
+    component: wallet
+    tier: backend
+spec:
+  selector:
+    app: wallet-api
+  ports:
+  - port: 8082
+    targetPort: 8082
+    protocol: TCP
+    name: http
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: wallet-api-hpa
+  namespace: provenly
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: wallet-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: wallet-api-pdb
+  namespace: provenly
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: wallet-api
+

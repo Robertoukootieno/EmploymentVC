@@ -1,0 +1,11 @@
+plugins {
+    id 'java-library'
+}
+
+description = 'Provenly Core Wallet Library - wallet and credential holding primitives'
+
+dependencies {
+    api project(':library-commons')
+    api project(':credentials-lib')
+    api project(':did-lib')
+}

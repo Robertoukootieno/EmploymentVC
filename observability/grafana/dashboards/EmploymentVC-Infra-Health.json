@@ -1,0 +1,56 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "EmploymentVC Infra Health",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Postgres Health",
+        "targets": [
+          {
+            "expr": "up{job='postgres'}",
+            "legendFormat": "Postgres",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+      },
+      {
+        "type": "graph",
+        "title": "Redis Health",
+        "targets": [
+          {
+            "expr": "up{job='redis'}",
+            "legendFormat": "Redis",
+            "refId": "B"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+      },
+      {
+        "type": "graph",
+        "title": "Besu Node Health",
+        "targets": [
+          {
+            "expr": "up{job='besu-node'}",
+            "legendFormat": "Besu",
+            "refId": "C"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 }
+      },
+      {
+        "type": "graph",
+        "title": "Keycloak Health",
+        "targets": [
+          {
+            "expr": "up{job='keycloak'}",
+            "legendFormat": "Keycloak",
+            "refId": "D"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 }
+      }
+    ]
+  }
+}

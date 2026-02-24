@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  # Example service for local development
+  example-service:
+    image: example-service:latest
+    build:
+      context: ../../backend-services/example-service
+      dockerfile: Dockerfile
+    environment:
+      EXAMPLE_ENV: dev
+    ports:
+      - "8081:8080"
+    volumes:
+      - ../../backend-services/example-service:/app
+    networks:
+      - provenly-network
+
+networks:
+  provenly-network:
+    driver: bridge

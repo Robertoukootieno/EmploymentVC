@@ -1,0 +1,35 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'com.employmentvc.lib'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    // DID resolution
+    implementation 'decentralized-identity:did-common-java:1.8.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
+    
+    // Web3j for Ethereum DID methods
+    implementation 'org.web3j:core:4.10.3'
+    
+    // Cache support
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    testImplementation 'org.mockito:mockito-core:5.8.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+repositories {
+    maven { url 'https://repo.danubetech.com/repository/maven-public/' }
+}

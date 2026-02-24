@@ -1,0 +1,129 @@
+# Platform Chart Default Values
+
+replicaCount: 1
+
+environment: production
+namespace: provenly
+
+image:
+  registry: docker.io
+  pullPolicy: IfNotPresent
+
+postgresql:
+  enabled: true
+  auth:
+    username: app_user
+    password: changeme_app_password
+    postgresPassword: changeme_postgres_password
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+  readReplicas:
+    enabled: false
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: changeme_redis_password
+  persistence:
+    enabled: true
+    size: 2Gi
+
+# Service configuration
+authService:
+  enabled: true
+  replicaCount: 2
+  image: employmentvc/auth-service:latest
+  port: 8081
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+walletAPI:
+  enabled: true
+  replicaCount: 2
+  image: employmentvc/wallet-api:latest
+  port: 8082
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+apiGateway:
+  enabled: true
+  replicaCount: 2
+  image: employmentvc/api-gateway:latest
+  port: 3000
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "250m"
+
+issuerAPI:
+  enabled: true
+  replicaCount: 2
+  image: employmentvc/issuer-api:latest
+  port: 3004
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+verifierAPI:
+  enabled: true
+  replicaCount: 2
+  image: employmentvc/verifier-api:latest
+  port: 3005
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: api.provenly.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: provenly-tls
+      hosts:
+        - api.provenly.local
+
+# Security policies
+rbac:
+  enabled: true
+
+podSecurityPolicy:
+  enabled: true
+
+networkPolicy:
+  enabled: true
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000

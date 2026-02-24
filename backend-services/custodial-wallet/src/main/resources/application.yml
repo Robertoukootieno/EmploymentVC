@@ -1,0 +1,54 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: custodial-wallet
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/employmentvc_wallet}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+wallet:
+  custodial:
+    encryption:
+      algorithm: AES-256-GCM
+      key-derivation: PBKDF2
+    did:
+      method: did:key
+      auto-create: true
+  key-management:
+    vault-backed: true
+    rotation-policy: 90
+
+vault:
+  url: ${VAULT_URL:http://localhost:8200}
+  token: ${VAULT_TOKEN}
+  secret-path: ${VAULT_SECRET_PATH:secret/wallet}
+
+did-registry:
+  url: ${DID_REGISTRY_URL:http://localhost:8082}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.employmentvc.wallet: DEBUG

@@ -1,0 +1,11 @@
+plugins {
+    id 'java-library'
+}
+
+description = 'Provenly OpenID4VC Library - OpenID4VCI/OpenID4VP helper primitives'
+
+dependencies {
+    api project(':library-commons')
+    api project(':vc-core')
+    api project(':protocols-lib')
+}

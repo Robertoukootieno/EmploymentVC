@@ -10,7 +10,7 @@ echo "🚀 Generating Kubernetes manifests for Provenly microservices..."
 declare -A SERVICES=(
     ["auth-service"]="3001:authentication:backend"
     ["did-registry"]="3002:did-registry:backend"
-    ["credential-schema-registry"]="3003:schema-registry:backend"
+    ["schema-registry"]="8086:schema-registry:backend"
     ["provenly-issuer-service"]="3004:issuer:backend"
     ["provenly-verifier-service"]="3005:verifier:backend"
     ["provenly-holder-wallet"]="3006:wallet:backend"

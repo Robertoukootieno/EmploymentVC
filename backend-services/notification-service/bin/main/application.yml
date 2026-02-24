@@ -1,0 +1,59 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: notification-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/employmentvc_notification}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+notification:
+  email:
+    from: ${EMAIL_FROM:noreply@employmentvc.com}
+    templates-path: classpath:/templates/email
+  webhooks:
+    retry-attempts: 3
+    timeout: 5000
+  events:
+    topics:
+      - credential-issued
+      - credential-revoked
+      - verification-requested
+      - verification-completed
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.employmentvc.notification: DEBUG

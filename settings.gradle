@@ -1,6 +1,16 @@
-rootProject.name = 'provenly-employment-vc'
+rootProject.name = 'employmentvc-platform'
 
-// Backend Libraries
+// ============================================
+// Backend Libraries (Shared Logic)
+// ============================================
+// Core SSI Libraries
+include 'vc-core'
+include 'did-core'
+include 'crypto-core'
+include 'policy-core'
+include 'observability-core'
+
+// Legacy Libraries (Consider migrating to core libraries)
 include 'auth-lib'
 include 'credentials-lib'
 include 'crypto-lib'
@@ -12,18 +22,50 @@ include 'did-lib'
 include 'library-commons'
 include 'openid4vc-lib'
 
-// Backend Services
+// ============================================
+// Backend Services (Microservices)
+// ============================================
+// Core Services
+include 'api-gateway'
+include 'auth-service'
+
+// Workflow & Orchestration
+include 'workflow-service'
+
+// Issuer & Verifier Services
 include 'issuer-api'
 include 'verifier-api'
-include 'wallet-api'
-include 'web3-login-service'
-include 'e2e-test-service'
-include 'auth-service'
+
+// DID & Schema Services
 include 'did-registry'
 include 'schema-registry'
-include 'api-gateway'
 
-// Set project directories
+// Credential Management
+include 'credential-registry'
+
+// Wallet Services
+include 'custodial-wallet'
+include 'noncustodial-gateway'
+include 'wallet-api'                  // Legacy - to be migrated
+
+// Notification Service
+include 'notification-service'
+
+// Legacy Services (To Be Refactored/Removed)
+include 'web3-login-service'         // To merge into auth-service
+include 'e2e-test-service'           // To move to tests/
+
+// ============================================
+// Project Directory Mappings
+// ============================================
+// Core SSI Libraries
+project(':vc-core').projectDir = file('backend-libraries/vc-core')
+project(':did-core').projectDir = file('backend-libraries/did-core')
+project(':crypto-core').projectDir = file('backend-libraries/crypto-core')
+project(':policy-core').projectDir = file('backend-libraries/policy-core')
+project(':observability-core').projectDir = file('backend-libraries/observability-core')
+
+// Legacy Backend Libraries
 project(':auth-lib').projectDir = file('backend-libraries/auth-lib')
 project(':credentials-lib').projectDir = file('backend-libraries/credentials-lib')
 project(':crypto-lib').projectDir = file('backend-libraries/crypto-lib')
@@ -35,12 +77,20 @@ project(':did-lib').projectDir = file('backend-libraries/did-lib')
 project(':library-commons').projectDir = file('backend-libraries/library-commons')
 project(':openid4vc-lib').projectDir = file('backend-libraries/openid4vc-lib')
 
+// Backend Services
+project(':api-gateway').projectDir = file('backend-services/api-gateway')
+project(':auth-service').projectDir = file('backend-services/auth-service')
+project(':workflow-service').projectDir = file('backend-services/workflow-service')
 project(':issuer-api').projectDir = file('backend-services/issuer-api')
 project(':verifier-api').projectDir = file('backend-services/verifier-api')
+project(':did-registry').projectDir = file('backend-services/did-registry')
+project(':schema-registry').projectDir = file('backend-services/schema-registry')
+project(':credential-registry').projectDir = file('backend-services/credential-registry')
+project(':custodial-wallet').projectDir = file('backend-services/custodial-wallet')
+project(':noncustodial-gateway').projectDir = file('backend-services/noncustodial-gateway')
+project(':notification-service').projectDir = file('backend-services/notification-service')
+
+// Legacy Services
 project(':wallet-api').projectDir = file('backend-services/wallet-api')
 project(':web3-login-service').projectDir = file('backend-services/web3-login-service')
 project(':e2e-test-service').projectDir = file('backend-services/e2e-test-service')
-project(':auth-service').projectDir = file('backend-services/auth-service')
-project(':did-registry').projectDir = file('backend-services/did-registry')
-project(':schema-registry').projectDir = file('backend-services/schema-registry')
-project(':api-gateway').projectDir = file('backend-services/api-gateway')

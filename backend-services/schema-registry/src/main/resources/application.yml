@@ -1,0 +1,43 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: schema-registry
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/employmentvc_schema}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+schema:
+  base-context: https://www.w3.org/2018/credentials/v1
+  storage:
+    type: database
+  versioning:
+    strategy: semantic
+  validation:
+    json-schema-draft: draft-07
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.employmentvc.schema: DEBUG

@@ -1,0 +1,17 @@
+{
+  "debug": false,
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3",
+    "labels": "com.example.vendor=Provenly"
+  },
+  "storage-driver": "overlay2",
+  "insecure-registries": [],
+  "registry-mirrors": [],
+  "metrics-addr": "127.0.0.1:9323",
+  "experimental": false,
+  "features": {
+    "buildkit": true
+  }
+}

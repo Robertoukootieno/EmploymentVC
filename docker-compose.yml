@@ -1,14 +1,15 @@
-version: '3.8'
+
+
+name: ${COMPOSE_PROJECT_NAME:-employmentvc}
 
 services:
   # Database
   postgres:
     image: postgres:15-alpine
-    container_name: provenly-postgres
     environment:
-      POSTGRES_DB: provenly_dev
-      POSTGRES_USER: provenly_dev
-      POSTGRES_PASSWORD: dev_password
+      POSTGRES_DB: ${POSTGRES_DB:-provenly_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-provenly_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
     ports:
       - "5432:5432"
     volumes:
@@ -16,11 +17,10 @@ services:
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - provenly-network
-
+  
   # Redis
   redis:
     image: redis:7-alpine
-    container_name: provenly-redis
     ports:
       - "6379:6379"
     volumes:
@@ -31,7 +31,6 @@ services:
   # Hyperledger Besu
   besu-node:
     image: hyperledger/besu:latest
-    container_name: provenly-besu
     command: [
       "--network=dev",
       "--miner-enabled",
@@ -57,14 +56,13 @@ services:
   # Keycloak
   keycloak:
     image: quay.io/keycloak/keycloak:23.0
-    container_name: provenly-keycloak
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: dev_admin_password
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/provenly_dev
-      KC_DB_USERNAME: provenly_dev
-      KC_DB_PASSWORD: dev_password
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-provenly_dev}
+      KC_DB_USERNAME: ${POSTGRES_USER:-provenly_dev}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
       KC_HOSTNAME: localhost
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_STRICT_HTTPS: false
@@ -72,7 +70,7 @@ services:
       KC_HEALTH_ENABLED: true
       KC_METRICS_ENABLED: true
     ports:
-      - "8080:8080"
+      - "8092:8080"
     volumes:
       - ./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     depends_on:
@@ -82,31 +80,30 @@ services:
       - provenly-network
 
   # Walt.id Core
-  waltid-core:
-    image: waltid/waltid-ssikit:latest
-    container_name: provenly-waltid-core
-    ports:
-      - "7000:7000"
-    environment:
-      WALTID_DATA_ROOT: /app/data
-    volumes:
-      - waltid_data:/app/data
-    networks:
-      - provenly-network
+  #waltid-core:
+    #image: waltid/waltid-ssikit:latest
+    #container_name: provenly-waltid-core
+    #ports:
+    #  - "7000:7000"
+    #environment:
+    #  WALTID_DATA_ROOT: /app/data
+    #volumes:
+     # - waltid_data:/app/data
+   # networks:
+     # - provenly-network
 
   # Walt.id Signatory
-  waltid-signatory:
-    image: waltid/waltid-signatory:latest
-    container_name: provenly-waltid-signatory
-    ports:
-      - "7001:7001"
-    networks:
-      - provenly-network
+  #waltid-signatory:
+   # image: waltid/waltid-signatory:latest
+   # container_name: provenly-waltid-signatory
+   # ports:
+   #   - "7001:7001"
+   # networks:
+    #  - provenly-network
 
   # Monitoring - Prometheus
   prometheus:
     image: prom/prometheus:latest
-    container_name: provenly-prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -118,7 +115,6 @@ services:
   # Monitoring - Grafana
   grafana:
     image: grafana/grafana:latest
-    container_name: provenly-grafana
     ports:
       - "3001:3000"
     environment:
@@ -131,7 +127,6 @@ services:
   # Tracing - Jaeger
   jaeger:
     image: jaegertracing/all-in-one:latest
-    container_name: provenly-jaeger
     ports:
       - "16686:16686"
       - "14268:14268"
@@ -151,3 +146,5 @@ volumes:
 networks:
   provenly-network:
     driver: bridge
+    name: ${EMPLOYMENTVC_SHARED_NETWORK:-employmentvc-network}
+

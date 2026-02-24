@@ -1,0 +1,52 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: verifier-service
+  datasource:
+    url: jdbc:postgresql://host.docker.internal:5432/employmentvc_verifier
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+verifier:
+  did: ${VERIFIER_DID}
+  presentation:
+    challenge-ttl: 600
+  trust:
+    trusted-issuers:
+      - ${ISSUER_DID}
+  revocation:
+    check-enabled: true
+    cache-ttl: 300
+
+did-resolver:
+  url: ${DID_RESOLVER_URL:http://localhost:8082}
+
+opa:
+  url: ${OPA_URL:http://localhost:8181}
+  policy-path: /v1/data/verification
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.employmentvc.verifier: DEBUG

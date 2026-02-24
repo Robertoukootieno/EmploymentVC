@@ -71,13 +71,13 @@ if [ -d "backend/did-registry" ]; then
     fi
 fi
 
-if [ -d "backend/credential-schema-registry" ]; then
+if [ -d "backend/schema-registry" ]; then
     if [ ! -d "backend-services/schema-registry" ]; then
-        print_warning "Moving credential-schema-registry to backend-services/schema-registry"
-        mv backend/credential-schema-registry backend-services/schema-registry
+        print_warning "Moving schema-registry to backend-services/schema-registry"
+        mv backend/schema-registry backend-services/schema-registry
     else
         print_warning "schema-registry already exists in backend-services/, removing duplicate"
-        rm -rf backend/credential-schema-registry
+        rm -rf backend/schema-registry
     fi
 fi
 

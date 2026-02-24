@@ -1,0 +1,58 @@
+name: ${COMPOSE_PROJECT_NAME:-employmentvc-elk}
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - employmentvc-security
+      - employmentvc
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.0
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    ports:
+      - "5044:5044" # Beats input
+      - "9600:9600" # Monitoring API
+    networks:
+      - employmentvc-security
+      - employmentvc
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - employmentvc-security
+      - employmentvc
+    depends_on:
+      - elasticsearch
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  employmentvc-security:
+    driver: bridge
+  employmentvc:
+    external: true
+    name: ${EMPLOYMENTVC_SHARED_NETWORK:-employmentvc-network}

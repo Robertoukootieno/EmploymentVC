@@ -1,0 +1,29 @@
+# Docker Buildx Configuration
+# This file configures multi-architecture builds for EmploymentVC services
+
+[registry."docker.io"]
+  mirrors = []
+
+[registry."ghcr.io"]
+  mirrors = []
+
+# Build cache configuration
+[build]
+  max-parallelism = 4
+
+# Worker configuration for multi-platform builds
+[worker.oci]
+  enabled = true
+  platforms = ["linux/amd64", "linux/arm64"]
+  max-parallelism = 2
+
+[worker.containerd]
+  enabled = true
+  platforms = ["linux/amd64", "linux/arm64"]
+  gc = true
+  gckeepstorage = "10GB"
+
+# Export configuration
+[export]
+  compression = "gzip"
+  compression-level = 6

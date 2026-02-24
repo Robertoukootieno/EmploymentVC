@@ -1,0 +1,53 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: did-registry
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/employmentvc_did}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+
+did:
+  methods:
+    supported:
+      - did:web
+      - did:key
+      - did:ethr
+  resolver:
+    cache-ttl: 3600
+    universal-resolver-url: ${UNIVERSAL_RESOLVER_URL:https://dev.uniresolver.io}
+  ledger:
+    besu:
+      rpc-url: ${BESU_RPC_URL:http://localhost:8545}
+      chain-id: ${BESU_CHAIN_ID:1337}
+      contract-address: ${DID_REGISTRY_CONTRACT:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  level:
+    com.employmentvc.didregistry: DEBUG

@@ -1,0 +1,101 @@
+name: ${COMPOSE_PROJECT_NAME:-employmentvc-prod}
+
+services:
+  # Database - Production hardened
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-provenly_prod}
+      POSTGRES_USER: ${DB_USER:-provenly_prod}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_me_prod_db_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - provenly-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-provenly_prod}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  # Redis - Production hardened
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-change_me_prod_redis_password}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - provenly-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Keycloak - Production hardened
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0
+    restart: always
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-change_me_prod_keycloak_admin_password}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-provenly_prod}
+      KC_DB_USERNAME: ${DB_USER:-provenly_prod}
+      KC_DB_PASSWORD: ${DB_PASSWORD:-change_me_prod_db_password}
+      KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
+      KC_HOSTNAME_STRICT: true
+      KC_HOSTNAME_STRICT_HTTPS: true
+      KC_HTTP_ENABLED: false
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+    ports:
+      - "8092:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - provenly-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  provenly-network:
+    driver: bridge
