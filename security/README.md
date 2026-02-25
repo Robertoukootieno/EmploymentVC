@@ -4,6 +4,7 @@ Complete security infrastructure for the EmploymentVC platform, including certif
 
 ## 📋 Quick Navigation
 
+- **[SECURITY_TESTING_GUIDE.md](./SECURITY_TESTING_GUIDE.md)** - Step-by-step testing process (START HERE)
 - **[IMPLEMENTATION.md](./IMPLEMENTATION.md)** - Complete setup and integration guide
 - **[../security.md](../security.md)** - Responsible disclosure policy
 - **[threat-models/threat-model.md](./threat-models/threat-model.md)** - Risk assessment & compliance
@@ -266,6 +267,7 @@ kubectl create configmap opa-policies \
 
 | Document | Purpose |
 |----------|---------|
+| [SECURITY_TESTING_GUIDE.md](./SECURITY_TESTING_GUIDE.md) | Step-by-step testing procedures (tested & validated) |
 | [IMPLEMENTATION.md](./IMPLEMENTATION.md) | Complete setup and integration guide |
 | [threat-models/threat-model.md](./threat-models/threat-model.md) | Risk assessment and compliance |
 | [../security.md](../security.md) | Responsible disclosure policy |
