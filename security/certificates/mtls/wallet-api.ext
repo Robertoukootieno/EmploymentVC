@@ -1,0 +1,3 @@
+subjectAltName = DNS:wallet-api,DNS:wallet-api.default,DNS:wallet-api.provenly
+keyUsage = digitalSignature,keyEncipherment
+extendedKeyUsage = serverAuth,clientAuth

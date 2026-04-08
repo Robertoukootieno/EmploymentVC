@@ -1,0 +1,3 @@
+subjectAltName = DNS:issuer-api,DNS:issuer-api.default,DNS:issuer-api.provenly
+keyUsage = digitalSignature,keyEncipherment
+extendedKeyUsage = serverAuth,clientAuth

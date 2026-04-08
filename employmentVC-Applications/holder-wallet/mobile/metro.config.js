@@ -10,7 +10,6 @@ const defaultConfig = getDefaultConfig(__dirname);
 const config = {
   resolver: {
     alias: {
-      crypto: 'crypto-browserify',
       stream: 'stream-browserify',
       buffer: 'buffer',
     },

@@ -74,7 +74,6 @@ configure(subprojects.findAll { it.path in [
 ]}) {
 
     apply plugin: 'java-library'
-    apply plugin: 'checkstyle'
     apply plugin: 'com.github.spotbugs'
 
     java {
@@ -123,7 +122,6 @@ configure(subprojects.findAll { it.path in [
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'checkstyle'
     apply plugin: 'com.github.spotbugs'
 
     java {

@@ -5,65 +5,50 @@
  */
 
 import React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useAppSelector} from '../store';
-
-// Navigators
-import AuthNavigator from './AuthNavigator';
-import MainTabNavigator from './MainTabNavigator';
-import OnboardingNavigator from './OnboardingNavigator';
-
-// Screens
-import SplashScreen from '../screens/SplashScreen';
-import WalletSetupScreen from '../screens/WalletSetupScreen';
 
 // Types
 export type RootStackParamList = {
-  Splash: undefined;
-  Onboarding: undefined;
-  Auth: undefined;
-  WalletSetup: undefined;
-  Main: undefined;
+  Home: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const AppNavigator: React.FC = () => {
-  const {isAuthenticated, hasCompletedOnboarding, hasWallet, isLoading} = useAppSelector(
-    (state) => ({
-      isAuthenticated: state.auth.isAuthenticated,
-      hasCompletedOnboarding: state.auth.hasCompletedOnboarding,
-      hasWallet: state.wallet.wallets.length > 0,
-      isLoading: state.auth.loading.authenticating || state.wallet.loading.fetching,
-    })
+const SmokeHomeScreen: React.FC = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Holder Wallet</Text>
+      <Text style={styles.subtitle}>Smoke test navigation is active.</Text>
+    </View>
   );
+};
 
-  // Show splash screen while loading
-  if (isLoading) {
-    return (
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
-      </Stack.Navigator>
-    );
-  }
-
+const AppNavigator: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      {!hasCompletedOnboarding ? (
-        // First time user - show onboarding
-        <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
-      ) : !isAuthenticated ? (
-        // User needs to authenticate
-        <Stack.Screen name="Auth" component={AuthNavigator} />
-      ) : !hasWallet ? (
-        // User is authenticated but needs to create/import a wallet
-        <Stack.Screen name="WalletSetup" component={WalletSetupScreen} />
-      ) : (
-        // User is authenticated and has a wallet - show main app
-        <Stack.Screen name="Main" component={MainTabNavigator} />
-      )}
+      <Stack.Screen name="Home" component={SmokeHomeScreen} />
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    padding: 24,
+  },
+  subtitle: {
+    color: '#334155',
+    fontSize: 14,
+    marginTop: 8,
+  },
+  title: {
+    color: '#0F172A',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+});
 
 export default AppNavigator;

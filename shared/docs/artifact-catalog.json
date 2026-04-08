@@ -6,6 +6,20 @@
       "owner": "team-ssi-platform",
       "version": "1.0.0",
       "status": "active"
+    },
+    {
+      "path": "shared/schemas/contexts/employment-v1.jsonld",
+      "type": "jsonld-context",
+      "owner": "team-ssi-platform",
+      "version": "1.0.0",
+      "status": "active"
+    },
+    {
+      "path": "shared/contracts/registry/employment-credential-registry.abi.json",
+      "type": "contract-abi",
+      "owner": "team-ssi-platform",
+      "version": "1.0.0",
+      "status": "active"
     }
   ]
 }

@@ -9,29 +9,15 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "declaration": false,
     "declarationMap": false,
-    "sourceMap": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"],
-      "@/components/*": ["components/*"],
-      "@/screens/*": ["screens/*"],
-      "@/navigation/*": ["navigation/*"],
-      "@/services/*": ["services/*"],
-      "@/store/*": ["store/*"],
-      "@/types/*": ["types/*"],
-      "@/utils/*": ["utils/*"],
-      "@/styles/*": ["styles/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/constants/*": ["constants/*"]
-    }
+    "sourceMap": true
   },
   "include": [
     "src/**/*",

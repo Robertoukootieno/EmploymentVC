@@ -1,0 +1,3 @@
+subjectAltName = DNS:*.provenly.local,DNS:localhost,DNS:*.local,IP:127.0.0.1
+keyUsage = digitalSignature,keyEncipherment
+extendedKeyUsage = serverAuth

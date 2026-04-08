@@ -17,16 +17,10 @@ keywords:
   - microservices
 icon: https://raw.githubusercontent.com/Robertoukootieno/EmploymentVC/main/docs/assets/logo.png
 
-values:
-  replicaCount: 1
-  environment: production
-  
-subcharts:
+dependencies:
   - name: postgresql
     version: "^12.0.0"
     repository: https://charts.bitnami.com/bitnami
-    enabled: true
   - name: redis
     version: "^17.0.0"
     repository: https://charts.bitnami.com/bitnami
-    enabled: false

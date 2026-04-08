@@ -1,0 +1,3 @@
+subjectAltName = DNS:api-gateway,DNS:api-gateway.default,DNS:api-gateway.provenly
+keyUsage = digitalSignature,keyEncipherment
+extendedKeyUsage = serverAuth,clientAuth

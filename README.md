@@ -144,7 +144,7 @@ The platform includes enterprise-grade infrastructure for development, staging, 
 | API Gateway | 8080 | Main API entry point |
 | Auth Service | 8081 | Authentication service |
 | DID Registry | 8082 | DID management |
-| Schema Registry | 8083 | Credential schemas |
+| Schema Registry | 8086 | Credential schemas |
 | **Application Service** | **8084** | **🌟 Core VC Operations** |
 | | | **• Issuer Component** |
 | | | **• Verifier Component** |

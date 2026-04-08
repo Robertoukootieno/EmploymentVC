@@ -37,17 +37,17 @@ WARNINGS=0
 # Helper functions
 check_pass() {
   echo -e "${GREEN}✓${NC} $*" | tee -a "$RESULTS_FILE"
-  ((PASSED++))
+  PASSED=$((PASSED + 1))
 }
 
 check_fail() {
   echo -e "${RED}✗${NC} $*" | tee -a "$RESULTS_FILE"
-  ((FAILED++))
+  FAILED=$((FAILED + 1))
 }
 
 check_warn() {
   echo -e "${YELLOW}!${NC} $*" | tee -a "$RESULTS_FILE"
-  ((WARNINGS++))
+  WARNINGS=$((WARNINGS + 1))
 }
 
 section() {

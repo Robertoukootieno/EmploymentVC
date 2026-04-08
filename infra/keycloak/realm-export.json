@@ -208,8 +208,8 @@
       "clientId": "holder-wallet-web",
       "name": "Holder Wallet Web Application",
       "description": "Web wallet for individuals to manage credentials",
-      "rootUrl": "http://localhost:3003",
-      "adminUrl": "http://localhost:3003",
+      "rootUrl": "http://localhost:3000",
+      "adminUrl": "http://localhost:3000",
       "baseUrl": "/",
       "surrogateAuthRequired": false,
       "enabled": true,
@@ -217,11 +217,11 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "holder-wallet-web-secret",
       "redirectUris": [
-        "http://localhost:3003/*",
+        "http://localhost:3000/*",
         "https://wallet.provenly.io/*"
       ],
       "webOrigins": [
-        "http://localhost:3003",
+        "http://localhost:3000",
         "https://wallet.provenly.io"
       ],
       "publicClient": true,

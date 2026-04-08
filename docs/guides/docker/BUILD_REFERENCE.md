@@ -68,7 +68,7 @@ cat ~/.docker/config.json | grep ghcr.io
 | api-gateway | 8080 | Main API entry point |
 | auth-service | 8081 | Authentication service |
 | did-registry | 8082 | DID management |
-| schema-registry | 8083 | Credential schemas |
+| schema-registry | 8086 | Credential schemas |
 | issuer-api | 8085 | Credential issuance |
 | verifier-api | 8086 | Credential verification |
 | wallet-api | 8084 | Wallet operations |

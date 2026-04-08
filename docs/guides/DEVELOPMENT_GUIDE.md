@@ -86,7 +86,7 @@ backend-services/
 ├── issuer-api/            # Port 8085 (to implement)
 ├── verifier-api/          # Port 8086 (to implement)
 ├── did-registry/          # Port 8082 (to implement)
-├── schema-registry/       # Port 8083 (to implement)
+├── schema-registry/       # Port 8086 (to implement)
 └── api-gateway/           # Port 8080 (to implement)
 
 backend-libraries/

@@ -1,0 +1,3 @@
+subjectAltName = DNS:verifier-api,DNS:verifier-api.default,DNS:verifier-api.provenly
+keyUsage = digitalSignature,keyEncipherment
+extendedKeyUsage = serverAuth,clientAuth

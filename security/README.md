@@ -282,7 +282,7 @@ kubectl create configmap opa-policies \
 
 ## 👥 Team Contacts
 
-- **Security Issues**: security@provenly.io
+- **Security Issues**: 
 - **GitHub Issues**: Use `[SECURITY]` prefix
 - **Emergency**: security-team-oncall (PagerDuty)
 

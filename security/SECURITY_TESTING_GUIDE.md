@@ -6,7 +6,7 @@ Complete step-by-step guide for executing the security testing process successfu
 
 This guide documents the tested and validated process for running the complete security verification suite for the EmploymentVC platform. Following these steps ensures all security components are properly initialized, configured, and verified.
 
-**Time Duration**: ~5-10 minutes (depending on Grype dependency scan)  
+  
 **Prerequisites**: Docker, bash, curl, jq (optional)
 
 ---
@@ -37,7 +37,7 @@ cd /home/robert/EmploymentVC
 
 ### Step 2.1: Generate Certificates (If Not Already Present)
 ```bash
-bash security/certificates/generate-certs.sh /home/robert/EmploymentVC/security/certificates development 90
+bash security/certificates/generate-certs.sh /home/robert/EmploymentVC/security/certificates 90 development 
 ```
 
 **Expected Output**:

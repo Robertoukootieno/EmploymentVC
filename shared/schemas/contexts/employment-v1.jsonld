@@ -1,0 +1,26 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "id": "@id",
+    "type": "@type",
+    "EmploymentCredential": "https://provenly.io/credentials#EmploymentCredential",
+    "credentialSubject": "https://www.w3.org/2018/credentials#credentialSubject",
+    "employeeId": "https://provenly.io/credentials#employeeId",
+    "position": "https://provenly.io/credentials#position",
+    "department": "https://provenly.io/credentials#department",
+    "startDate": {
+      "@id": "https://provenly.io/credentials#startDate",
+      "@type": "http://www.w3.org/2001/XMLSchema#date"
+    },
+    "endDate": {
+      "@id": "https://provenly.io/credentials#endDate",
+      "@type": "http://www.w3.org/2001/XMLSchema#date"
+    },
+    "salary": {
+      "@id": "https://provenly.io/credentials#salary",
+      "@type": "http://www.w3.org/2001/XMLSchema#decimal"
+    },
+    "employer": "https://provenly.io/credentials#employer",
+    "did": "https://www.w3.org/ns/did#"
+  }
+}
